@@ -11,15 +11,14 @@ const supermarkets = [
   { id: 'carrefour', name: 'Carrefour', logo: '🏪' },
   { id: 'disco', name: 'Disco', logo: '🛒' },
   { id: 'jumbo', name: 'Jumbo', logo: '🏬' },
-  { id: 'dia', name: 'Dia', logo: '🏪' },
-  { id: 'vea', name: 'Vea', logo: '🛍️' }
+  { id: 'dia', name: 'Dia', logo: '🏪' }
 ];
 
 export default function SupermarketSelector({ selectedSupermarkets, onSupermarketToggle }: SupermarketSelectorProps) {
   return (
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-4">Seleccionar Supermercados</h2>
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {supermarkets.map((supermarket) => {
           const isSelected = selectedSupermarkets.includes(supermarket.id);
           return (

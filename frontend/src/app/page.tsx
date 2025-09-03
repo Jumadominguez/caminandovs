@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import SupermarketSelector from '../components/SupermarketSelector';
 import Filters from '../components/Filters';
 import IntegratedProductTable from '../components/IntegratedProductTable';
+import ComparisonTable from '../components/ComparisonTable';
 import { sampleProducts } from '../data/sampleData';
 
 interface Product {
@@ -24,7 +25,7 @@ interface ComparisonProduct extends Product {
 export default function Home() {
   // Estado para supermercados seleccionados
   const [selectedSupermarkets, setSelectedSupermarkets] = useState<string[]>([
-    'carrefour', 'disco', 'jumbo', 'dia', 'vea'
+    'carrefour', 'disco', 'jumbo', 'dia'
   ]);
 
   // Estado para filtros
@@ -93,7 +94,7 @@ export default function Home() {
   };
 
   // Manejar cambios en cantidad
-  const handleQuantityChange = (productId: string, quantity: number) => {
+  const handleUpdateQuantity = (productId: string, quantity: number) => {
     setComparisonProducts(prev =>
       prev.map(product =>
         product.id === productId ? { ...product, quantity } : product
@@ -205,6 +206,11 @@ export default function Home() {
     }
   }, [selectedProductType, selectedSupermarkets, subfilters]);
 
+  // Guardar productos de comparación en localStorage
+  useEffect(() => {
+    localStorage.setItem('comparisonProducts', JSON.stringify(comparisonProducts));
+  }, [comparisonProducts]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -216,7 +222,15 @@ export default function Home() {
             </h1>
             <nav className="space-x-4">
               <a href="/" className="text-blue-600 font-medium">Inicio</a>
-              <a href="/productos-comparados" className="text-gray-600 hover:text-gray-900">Comparar</a>
+              <a href="#comparacion" className="text-gray-600 hover:text-gray-900 relative">
+                Comparar
+                {comparisonProducts.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {comparisonProducts.length}
+                  </span>
+                )}
+              </a>
+              <a href="/productos-comparados" className="text-gray-600 hover:text-gray-900">Vista Completa</a>
               <a href="/dashboard" className="text-gray-600 hover:text-gray-900">Dashboard</a>
             </nav>
           </div>
@@ -251,10 +265,25 @@ export default function Home() {
             availableProducts={availableProducts}
             comparisonProducts={comparisonProducts}
             onProductToggle={handleProductToggle}
-            onQuantityChange={handleQuantityChange}
+            onUpdateQuantity={handleUpdateQuantity}
             onRemoveProduct={handleRemoveProduct}
             onRemoveAll={handleRemoveAll}
           />
+        )}
+
+        {/* Comparison Table - Show when there are products to compare */}
+        {comparisonProducts.length > 0 && (
+          <div id="comparacion" className="mt-8">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Comparación de Precios</h2>
+              <p className="text-gray-600">Compara precios entre diferentes supermercados y encuentra la mejor oferta.</p>
+            </div>
+            <ComparisonTable
+              comparisonProducts={comparisonProducts}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveProduct={handleRemoveProduct}
+            />
+          </div>
         )}
       </main>
 

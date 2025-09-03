@@ -19,7 +19,7 @@ interface IntegratedProductTableProps {
   availableProducts: Product[];
   comparisonProducts: ComparisonProduct[];
   onProductToggle: (productId: string) => void;
-  onQuantityChange: (productId: string, quantity: number) => void;
+  onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveProduct: (productId: string) => void;
   onRemoveAll: () => void;
 }
@@ -28,7 +28,7 @@ export default function IntegratedProductTable({
   availableProducts,
   comparisonProducts,
   onProductToggle,
-  onQuantityChange,
+  onUpdateQuantity,
   onRemoveProduct,
   onRemoveAll
 }: IntegratedProductTableProps) {
