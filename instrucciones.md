@@ -18,7 +18,48 @@ Desarrollar una plataforma web moderna y responsive de comparación de precios d
 - **Necesidad**: Acompañamiento técnico completo y detallado
 - **Herramientas**: GitHub para control de versiones
 
-## 📖 DOCUMENTACIÓN TÉCNICA COMPLETA
+## � SISTEMA DE NOMENCLATURA DE VERSIONADO
+
+### 🎯 Formato de Commits
+```
+[tipo/]v[MAJOR].[MINOR].[PATCH]: Descripción del cambio
+```
+
+### 📋 Tipos de Cambios
+- **`feat/`** - Nueva funcionalidad
+- **`fix/`** - Corrección de bugs
+- **`refactor/`** - Refactorización de código
+- **`docs/`** - Cambios en documentación
+- **`style/`** - Cambios de estilo/formato
+- **`test/`** - Cambios en tests
+- **`chore/`** - Cambios de mantenimiento
+
+### 🔢 Versionado Semántico
+- **`MAJOR`** - Cambios incompatibles (breaking changes)
+- **`MINOR`** - Nuevas funcionalidades compatibles
+- **`PATCH`** - Correcciones de bugs y mejoras menores
+
+### 💡 Ejemplos Prácticos
+```
+feat/v1.0.0: Implementar menú desplegable jerárquico
+fix/v1.0.1: Corregir subfiltros dinámicos
+refactor/v1.1.0: Optimizar rendimiento de filtros
+docs/v1.1.1: Actualizar documentación de API
+chore/v1.1.2: Actualizar dependencias de seguridad
+```
+
+### 🎯 Beneficios
+- **📍 Referenciación fácil**: "Vuelve a v1.0.0" o "Avanza a v1.1.0"
+- **📊 Seguimiento de progreso**: Identificar claramente el estado del proyecto
+- **🔄 Reversión controlada**: Poder revertir a versiones específicas
+- **📈 Historial organizado**: Commits categorizados por tipo de cambio
+
+### 📊 Estado Actual del Proyecto
+- **Versión actual**: v1.0.0
+- **Último commit**: `feat/v1.0.0: Implementar subfiltros dinámicos basados en tipo de producto`
+- **Rama principal**: `checkpoints`
+
+## �📖 DOCUMENTACIÓN TÉCNICA COMPLETA
 
 > [!IMPORTANT]
 > **📚 Documentación Principal**: Consulta `docs/README.md` para visión general completa
