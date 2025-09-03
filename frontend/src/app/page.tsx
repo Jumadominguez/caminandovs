@@ -25,7 +25,7 @@ interface ComparisonProduct extends Product {
 export default function Home() {
   // Estado para supermercados seleccionados
   const [selectedSupermarkets, setSelectedSupermarkets] = useState<string[]>([
-    'carrefour', 'disco', 'jumbo', 'dia'
+    'carrefour', 'disco', 'jumbo', 'dia', 'vea'
   ]);
 
   // Estado para filtros

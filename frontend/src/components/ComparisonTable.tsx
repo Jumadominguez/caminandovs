@@ -23,7 +23,7 @@ interface ComparisonTableProps {
   onRemoveProduct: (productId: string) => void;
 }
 
-const SUPERMERCADOS = ['Carrefour', 'Jumbo', 'Disco', 'Dia'];
+const SUPERMERCADOS = ['Carrefour', 'Jumbo', 'Disco', 'Vea', 'Dia'];
 
 export default function ComparisonTable({
   comparisonProducts,
@@ -50,10 +50,19 @@ export default function ComparisonTable({
     return prices;
   };
 
-  // Función para encontrar el precio más barato
-  const findLowestPrice = (prices: { [key: string]: number | null }) => {
-    const validPrices = Object.values(prices).filter(price => price !== null) as number[];
-    return validPrices.length > 0 ? Math.min(...validPrices) : null;
+  // Función para encontrar el precio más barato y el supermercado correspondiente
+  const findLowestPriceAndSupermarket = (prices: { [key: string]: number | null }): { price: number | null; supermarket: string | null } => {
+    let lowestPrice: number | null = null;
+    let lowestSupermarket: string | null = null;
+
+    Object.entries(prices).forEach(([supermarket, price]) => {
+      if (price !== null && (lowestPrice === null || price < lowestPrice)) {
+        lowestPrice = price;
+        lowestSupermarket = supermarket;
+      }
+    });
+
+    return { price: lowestPrice, supermarket: lowestSupermarket };
   };
 
   if (comparisonProducts.length === 0) {
@@ -108,14 +117,9 @@ export default function ComparisonTable({
                 product.package,
                 product.size
               );
-              const lowestPrice = findLowestPrice(prices);
-              const caminandoPrice = getLowestPrice(
-                product.name,
-                product.brand,
-                product.variety,
-                product.package,
-                product.size
-              );
+              const lowestPriceInfo = findLowestPriceAndSupermarket(prices);
+              const lowestPrice = lowestPriceInfo.price;
+              const lowestSupermarket = lowestPriceInfo.supermarket;
 
               return (
                 <tr key={product.id} className="hover:bg-gray-50">
@@ -171,9 +175,16 @@ export default function ComparisonTable({
 
                   {/* Precio Caminando Online */}
                   <td className="px-6 py-4 whitespace-nowrap bg-blue-50">
-                    <span className="text-sm font-bold text-blue-600">
-                      ${caminandoPrice.toFixed(2)}
-                    </span>
+                    <div className="text-sm">
+                      <div className="font-bold text-blue-600">
+                        {lowestPrice ? `$${lowestPrice.toFixed(2)}` : '-'}
+                      </div>
+                      {lowestSupermarket && lowestPrice && (
+                        <div className="text-xs text-blue-500">
+                          via {lowestSupermarket}
+                        </div>
+                      )}
+                    </div>
                   </td>
 
                   {/* Botón de eliminar */}
@@ -191,29 +202,6 @@ export default function ComparisonTable({
           </tbody>
         </table>
       </div>
-
-      {/* Footer con totales */}
-      {comparisonProducts.length > 0 && (
-        <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
-          <div className="flex justify-between items-center">
-            <div className="text-sm font-medium text-gray-700">
-              Total productos: {comparisonProducts.reduce((sum, product) => sum + product.quantity, 0)}
-            </div>
-            <div className="text-lg font-bold text-gray-900">
-              Total estimado: ${comparisonProducts.reduce((sum, product) => {
-                const caminandoPrice = getLowestPrice(
-                  product.name,
-                  product.brand,
-                  product.variety,
-                  product.package,
-                  product.size
-                );
-                return sum + (caminandoPrice * product.quantity);
-              }, 0).toFixed(2)}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
