@@ -114,23 +114,6 @@ export default function FinalResultsTable({
 
   const { supermarketTotals, caminandoOnlineTotal } = calculateTotals();
 
-  // Encontrar el supermercado con el precio más bajo
-  const findLowestTotal = () => {
-    let lowestTotal = Infinity;
-    let lowestSupermarket = '';
-
-    Object.entries(supermarketTotals).forEach(([supermarket, total]) => {
-      if (total < lowestTotal) {
-        lowestTotal = total;
-        lowestSupermarket = supermarket;
-      }
-    });
-
-    return { lowestTotal, lowestSupermarket };
-  };
-
-  const { lowestTotal, lowestSupermarket } = findLowestTotal();
-
   if (comparisonProducts.length === 0) {
     return null;
   }
@@ -168,19 +151,13 @@ export default function FinalResultsTable({
               {/* Totales por supermercado */}
               {selectedSupermarketNames.map(supermarket => {
                 const total = supermarketTotals[supermarket];
-                const isLowest = total === lowestTotal;
 
                 return (
                   <td key={supermarket} className="px-6 py-6 whitespace-nowrap">
                     <div className="text-center">
-                      <div className={`text-lg font-bold ${isLowest ? 'text-green-600' : 'text-gray-900'}`}>
+                      <div className="text-lg font-bold text-gray-900">
                         ${total.toFixed(2)}
                       </div>
-                      {isLowest && (
-                        <div className="text-xs text-green-500 font-medium mt-1">
-                          💰 Mejor precio
-                        </div>
-                      )}
                     </div>
                   </td>
                 );
@@ -192,29 +169,11 @@ export default function FinalResultsTable({
                   <div className="text-xl font-bold text-blue-600">
                     ${caminandoOnlineTotal.toFixed(2)}
                   </div>
-                  <div className="text-xs text-blue-500 font-medium mt-1">
-                    🛒 Combinado óptimo
-                  </div>
-                  <div className="text-xs text-blue-400 mt-1">
-                    Ahorro: ${(Math.max(...Object.values(supermarketTotals)) - caminandoOnlineTotal).toFixed(2)}
-                  </div>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
-      </div>
-
-      {/* Resumen adicional */}
-      <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-        <div className="flex justify-between items-center text-sm">
-          <div className="text-gray-600">
-            <span className="font-medium">Productos en comparación:</span> {comparisonProducts.length}
-          </div>
-          <div className="text-green-600 font-medium">
-            Mejor opción: {lowestSupermarket} - ${lowestTotal.toFixed(2)}
-          </div>
-        </div>
       </div>
     </div>
   );
