@@ -25,7 +25,10 @@ export default function ProductTable({ products, selectedProducts, onProductTogg
       <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Productos Disponibles</h2>
         <div className="text-center py-8 text-gray-500">
-          <p>Selecciona una categoría, subcategoría y tipo de producto para ver los productos disponibles.</p>
+          <div className="space-y-2">
+            <p className="text-lg">No hay productos disponibles</p>
+            <p className="text-sm">Prueba ajustando los filtros de subcategoria para ver más opciones.</p>
+          </div>
         </div>
       </section>
     );

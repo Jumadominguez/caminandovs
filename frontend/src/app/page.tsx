@@ -254,12 +254,14 @@ export default function Home() {
           onResetFilters={handleResetFilters}
         />
 
-        {/* Product Table */}
-        <ProductTable
-          products={availableProducts}
-          selectedProducts={selectedProductIds}
-          onProductToggle={handleProductToggle}
-        />
+        {/* Product Table - Only show when product type is selected */}
+        {selectedProductType && (
+          <ProductTable
+            products={availableProducts}
+            selectedProducts={selectedProductIds}
+            onProductToggle={handleProductToggle}
+          />
+        )}
 
         {/* Comparison Table */}
         <ComparisonTable
