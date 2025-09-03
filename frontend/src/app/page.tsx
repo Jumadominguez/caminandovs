@@ -8,6 +8,24 @@ import ComparisonTable from '../components/ComparisonTable';
 import FinalResultsTable from '../components/FinalResultsTable';
 import { sampleProducts } from '../data/sampleData';
 
+const categories = {
+  'Almacén': {
+    'Aceites': ['Aceites de girasol', 'Aceites de oliva', 'Aceites mixtos'],
+    'Fideos': ['Fideos secos', 'Fideos frescos', 'Fideos integrales'],
+    'Salsas': ['Salsas de tomate', 'Salsas blancas', 'Salsas especiales']
+  },
+  'Bebidas': {
+    'Gaseosas': ['Gaseosas de litro', 'Gaseosas de 2.25L', 'Gaseosas de 500ml'],
+    'Vinos': ['Vinos tintos', 'Vinos blancos', 'Vinos rosados'],
+    'Aguas': ['Aguas sin gas', 'Aguas con gas', 'Aguas saborizadas']
+  },
+  'Limpieza': {
+    'Detergentes': ['Detergente para platos', 'Detergente para ropa', 'Detergente multiuso'],
+    'Lavandinas': ['Lavandina común', 'Lavandina concentrada', 'Lavandina perfumada'],
+    'Limpia Vidrios': ['Limpia vidrios concentrado', 'Limpia vidrios listo', 'Limpia vidrios antibacterial']
+  }
+};
+
 interface Product {
   id: string;
   name: string;
@@ -52,10 +70,43 @@ export default function Home() {
   // Manejar cambios en filtros
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
+    // Si hay productos en comparación, mantener el estado actual para no perder la tabla
+    if (comparisonProducts.length > 0) {
+      return;
+    }
+    // Lógica normal para cuando no hay productos en comparación
+    if (selectedSubcategory && category) {
+      const categoryData = categories[category as keyof typeof categories];
+      if (categoryData && categoryData[selectedSubcategory as keyof typeof categoryData]) {
+        // La subcategoría existe en la nueva categoría
+        const availableTypes = categoryData[selectedSubcategory as keyof typeof categoryData] as string[];
+        if (selectedProductType && Array.isArray(availableTypes) && availableTypes.includes(selectedProductType)) {
+          // El tipo de producto también existe, mantener todo
+          return;
+        } else {
+          // El tipo de producto no existe en la nueva subcategoría, solo resetear tipo
+          setSelectedProductType('');
+        }
+      } else {
+        // La subcategoría no existe en la nueva categoría, resetear todo
+        setSelectedSubcategory('');
+        setSelectedProductType('');
+      }
+    } else {
+      // No hay subcategoría seleccionada, resetear
+      setSelectedSubcategory('');
+      setSelectedProductType('');
+    }
   };
 
   const handleSubcategoryChange = (subcategory: string) => {
     setSelectedSubcategory(subcategory);
+    // Si hay productos en comparación, mantener el tipo de producto seleccionado
+    if (comparisonProducts.length > 0) {
+      return;
+    }
+    // Resetear selectedProductType cuando cambia la subcategoría y no hay productos en comparación
+    setSelectedProductType('');
   };
 
   const handleProductTypeChange = (productType: string) => {
@@ -237,8 +288,8 @@ export default function Home() {
           onResetFilters={handleResetFilters}
         />
 
-        {/* Integrated Product Table - Only show when product type is selected */}
-        {selectedProductType && (
+        {/* Integrated Product Table - Show when product type is selected OR when there are comparison products */}
+        {(selectedProductType || comparisonProducts.length > 0) && (
           <IntegratedProductTable
             availableProducts={availableProducts}
             comparisonProducts={comparisonProducts}

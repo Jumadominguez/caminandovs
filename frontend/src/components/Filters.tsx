@@ -97,7 +97,7 @@ export default function Filters({
     const [category, subcategory] = value.split('|');
     onCategoryChange(category);
     onSubcategoryChange(subcategory);
-    onProductTypeChange('');
+    // No resetear selectedProductType aquí - dejar que page.tsx maneje la lógica
   };
 
   useEffect(() => {
