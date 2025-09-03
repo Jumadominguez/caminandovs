@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react';
 import SupermarketSelector from '../components/SupermarketSelector';
 import Filters from '../components/Filters';
-import ProductTable from '../components/ProductTable';
-import ComparisonTable from '../components/ComparisonTable';
+import IntegratedProductTable from '../components/IntegratedProductTable';
 import { sampleProducts } from '../data/sampleData';
 
 interface Product {
@@ -254,23 +253,18 @@ export default function Home() {
           onResetFilters={handleResetFilters}
         />
 
-        {/* Product Table - Only show when product type is selected */}
+        {/* Integrated Product Table - Only show when product type is selected */}
         {selectedProductType && (
-          <ProductTable
-            products={availableProducts}
-            selectedProducts={selectedProductIds}
+          <IntegratedProductTable
+            availableProducts={availableProducts}
+            comparisonProducts={comparisonProducts}
             onProductToggle={handleProductToggle}
+            onQuantityChange={handleQuantityChange}
+            onRemoveProduct={handleRemoveProduct}
+            onRemoveAll={handleRemoveAll}
+            onCompare={handleCompare}
           />
         )}
-
-        {/* Comparison Table */}
-        <ComparisonTable
-          products={comparisonProducts}
-          onQuantityChange={handleQuantityChange}
-          onRemoveProduct={handleRemoveProduct}
-          onRemoveAll={handleRemoveAll}
-          onCompare={handleCompare}
-        />
       </main>
 
       {/* Footer */}
