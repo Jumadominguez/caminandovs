@@ -189,6 +189,17 @@ export default function FinalResultsTable({
 
   const { supermarketTotals, caminandoOnlineTotal } = calculateTotals();
 
+  // Calcular promedio de los supermercados (excluyendo Caminando Online)
+  const calculateAverageSupermarketTotal = () => {
+    const supermarketPrices = Object.values(supermarketTotals);
+    const sum = supermarketPrices.reduce((acc, price) => acc + price, 0);
+    return sum / supermarketPrices.length;
+  };
+
+  const averageSupermarketTotal = calculateAverageSupermarketTotal();
+  const savings = averageSupermarketTotal - caminandoOnlineTotal;
+  const savingsPercentage = ((savings / averageSupermarketTotal) * 100);
+
   if (comparisonProducts.length === 0) {
     return null;
   }
@@ -249,6 +260,27 @@ export default function FinalResultsTable({
             </tr>
           </tbody>
         </table>
+      </div>
+
+      {/* Cartel de Felicitaciones */}
+      <div className="mt-6 bg-gradient-to-r from-green-500 to-blue-600 rounded-lg shadow-lg p-6 text-center text-white">
+        <div className="flex items-center justify-center mb-2">
+          <span className="text-3xl mr-3">🎉</span>
+          <h3 className="text-2xl font-bold">¡Felicitaciones!</h3>
+        </div>
+        <p className="text-lg mb-2">
+          Caminando Online te está ahorrando{' '}
+          <span className="font-bold text-yellow-300 text-xl">
+            ${savings.toFixed(2)}
+          </span>
+        </p>
+        <p className="text-base">
+          que representa un{' '}
+          <span className="font-bold text-yellow-300 text-xl">
+            {savingsPercentage.toFixed(1)}%
+          </span>{' '}
+          menos que el promedio de los supermercados
+        </p>
       </div>
     </div>
   );
