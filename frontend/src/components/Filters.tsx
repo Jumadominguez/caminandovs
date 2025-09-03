@@ -62,7 +62,9 @@ export default function Filters({
 
   // Generar subfiltros dinámicos basados en productos disponibles
   const generateSubfilterOptions = (): { [key: string]: string[] } => {
+    console.log('Generating subfilter options for products:', availableProducts?.length || 0);
     if (!availableProducts || availableProducts.length === 0) {
+      console.log('No available products for subfilters');
       return {};
     }
 
@@ -73,6 +75,7 @@ export default function Filters({
       tamaño: [...new Set(availableProducts.map(p => p.size || p.tamaño || ''))].filter(Boolean).sort()
     };
 
+    console.log('Generated subfilter options:', options);
     return options;
   };
 
@@ -112,20 +115,24 @@ export default function Filters({
   // Resetear subfiltros cuando cambie el tipo de producto
   useEffect(() => {
     if (selectedProductType) {
-      // Resetear subfiltros cuando cambie el tipo de producto
-      const resetSubfilters: { [key: string]: string } = {};
-      Object.keys(dynamicSubfilterOptions).forEach(key => {
-        resetSubfilters[key] = '';
-      });
-      // Solo resetear si hay cambios en los subfiltros
-      const hasChanges = Object.keys(subfilters).some(key => subfilters[key] !== '');
-      if (hasChanges) {
+      console.log('Product type changed to:', selectedProductType);
+      console.log('Current subfilters before reset:', subfilters);
+      // Solo resetear subfiltros si el tipo de producto cambió completamente
+      // No resetear si solo estamos actualizando las opciones disponibles
+      const shouldReset = !Object.keys(dynamicSubfilterOptions).every(key => 
+        subfilters.hasOwnProperty(key)
+      );
+      
+      if (shouldReset) {
+        console.log('Resetting subfilters due to product type change');
         Object.keys(dynamicSubfilterOptions).forEach(filterName => {
           onSubfilterChange(filterName, '');
         });
+      } else {
+        console.log('Keeping existing subfilters');
       }
     }
-  }, [selectedProductType, dynamicSubfilterOptions, subfilters, onSubfilterChange]);
+  }, [selectedProductType]); // Removido dynamicSubfilterOptions y subfilters para evitar resets innecesarios
 
   return (
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">

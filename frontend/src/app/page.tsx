@@ -62,6 +62,7 @@ export default function Home() {
   };
 
   const handleSubfilterChange = (filterName: string, value: string) => {
+    console.log('Subfilter change:', filterName, '=', value);
     setSubfilters(prev => ({
       ...prev,
       [filterName]: value
@@ -123,30 +124,92 @@ export default function Home() {
 
   // Actualizar productos disponibles cuando cambia el tipo de producto
   useEffect(() => {
+    console.log('Filtering products for:', selectedProductType);
+    console.log('Current subfilters:', subfilters);
+    console.log('Selected supermarkets:', selectedSupermarkets);
+
     if (selectedProductType && sampleProducts[selectedProductType as keyof typeof sampleProducts]) {
       let products = sampleProducts[selectedProductType as keyof typeof sampleProducts];
+      console.log('Initial products count:', products.length);
 
       // Filtrar por supermercados seleccionados
-      products = products.filter(product =>
-        selectedSupermarkets.includes(product.supermarket.toLowerCase())
-      );
+      console.log('Filtering by supermarkets:', selectedSupermarkets);
+      const beforeSupermarketFilter = products.length;
+      products = products.filter(product => {
+        const productSupermarket = product.supermarket.toLowerCase();
+        const matches = selectedSupermarkets.some(sm => {
+          const selectedSm = sm.toLowerCase();
+          const match = selectedSm === productSupermarket;
+          if (!match) {
+            console.log('Supermarket filter: product supermarket:', productSupermarket, 'does not match selected:', selectedSm);
+          }
+          return match;
+        });
+        if (!matches) {
+          console.log('Product', product.name, 'supermarket:', product.supermarket, 'not in selected supermarkets');
+        }
+        return matches;
+      });
+      console.log('After supermarket filter:', products.length, '(filtered out:', beforeSupermarketFilter - products.length, ')');
 
       // Aplicar subfiltros
-      if (subfilters.marca && subfilters.marca !== 'Otra') {
-        products = products.filter(product => product.brand === subfilters.marca);
+      if (subfilters.marca) {
+        if (subfilters.marca === 'Otra') {
+          console.log('Skipping marca filter for "Otra"');
+        } else {
+          console.log('Applying marca filter:', subfilters.marca);
+          const beforeCount = products.length;
+          products = products.filter(product => {
+            const matches = product.brand === subfilters.marca;
+            if (!matches) {
+              console.log('Product', product.name, 'brand:', product.brand, 'does not match filter:', subfilters.marca);
+            }
+            return matches;
+          });
+          console.log('After marca filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
+        }
       }
       if (subfilters.variedad) {
-        products = products.filter(product => product.variety === subfilters.variedad);
+        console.log('Applying variedad filter:', subfilters.variedad);
+        const beforeCount = products.length;
+        products = products.filter(product => {
+          const matches = product.variety === subfilters.variedad;
+          if (!matches) {
+            console.log('Product', product.name, 'variety:', product.variety, 'does not match filter:', subfilters.variedad);
+          }
+          return matches;
+        });
+        console.log('After variedad filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
       }
       if (subfilters.envase) {
-        products = products.filter(product => product.package === subfilters.envase);
+        console.log('Applying envase filter:', subfilters.envase);
+        const beforeCount = products.length;
+        products = products.filter(product => {
+          const matches = product.package === subfilters.envase;
+          if (!matches) {
+            console.log('Product', product.name, 'package:', product.package, 'does not match filter:', subfilters.envase);
+          }
+          return matches;
+        });
+        console.log('After envase filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
       }
       if (subfilters.tamaño) {
-        products = products.filter(product => product.size === subfilters.tamaño);
+        console.log('Applying tamaño filter:', subfilters.tamaño);
+        const beforeCount = products.length;
+        products = products.filter(product => {
+          const matches = product.size === subfilters.tamaño;
+          if (!matches) {
+            console.log('Product', product.name, 'size:', product.size, 'does not match filter:', subfilters.tamaño);
+          }
+          return matches;
+        });
+        console.log('After tamaño filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
       }
 
+      console.log('Final products count:', products.length);
       setAvailableProducts(products);
     } else {
+      console.log('No products found for type:', selectedProductType);
       setAvailableProducts([]);
     }
   }, [selectedProductType, selectedSupermarkets, subfilters]);
