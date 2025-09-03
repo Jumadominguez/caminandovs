@@ -183,6 +183,7 @@ export default function Home() {
           selectedSubcategory={selectedSubcategory}
           selectedProductType={selectedProductType}
           subfilters={subfilters}
+          availableProducts={availableProducts}
           onCategoryChange={handleCategoryChange}
           onSubcategoryChange={handleSubcategoryChange}
           onProductTypeChange={handleProductTypeChange}

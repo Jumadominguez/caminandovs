@@ -7,6 +7,7 @@ interface FiltersProps {
   selectedSubcategory: string;
   selectedProductType: string;
   subfilters: { [key: string]: string };
+  availableProducts: any[];
   onCategoryChange: (category: string) => void;
   onSubcategoryChange: (subcategory: string) => void;
   onProductTypeChange: (productType: string) => void;
@@ -44,6 +45,7 @@ export default function Filters({
   selectedSubcategory,
   selectedProductType,
   subfilters,
+  availableProducts,
   onCategoryChange,
   onSubcategoryChange,
   onProductTypeChange,
@@ -57,6 +59,24 @@ export default function Filters({
     category,
     subcategories: Object.keys(subcategories)
   }));
+
+  // Generar subfiltros dinámicos basados en productos disponibles
+  const generateSubfilterOptions = (): { [key: string]: string[] } => {
+    if (!availableProducts || availableProducts.length === 0) {
+      return {};
+    }
+
+    const options = {
+      marca: [...new Set(availableProducts.map(p => p.brand || p.marca || ''))].filter(Boolean).sort(),
+      variedad: [...new Set(availableProducts.map(p => p.variety || p.variedad || ''))].filter(Boolean).sort(),
+      envase: [...new Set(availableProducts.map(p => p.package || p.envase || ''))].filter(Boolean).sort(),
+      tamaño: [...new Set(availableProducts.map(p => p.size || p.tamaño || ''))].filter(Boolean).sort()
+    };
+
+    return options;
+  };
+
+  const dynamicSubfilterOptions = generateSubfilterOptions();
 
   // Crear valor combinado para el select
   const selectedValue = selectedCategory && selectedSubcategory
@@ -88,6 +108,24 @@ export default function Filters({
       setAvailableProductTypes([]);
     }
   }, [selectedCategory, selectedSubcategory]);
+
+  // Resetear subfiltros cuando cambie el tipo de producto
+  useEffect(() => {
+    if (selectedProductType) {
+      // Resetear subfiltros cuando cambie el tipo de producto
+      const resetSubfilters: { [key: string]: string } = {};
+      Object.keys(dynamicSubfilterOptions).forEach(key => {
+        resetSubfilters[key] = '';
+      });
+      // Solo resetear si hay cambios en los subfiltros
+      const hasChanges = Object.keys(subfilters).some(key => subfilters[key] !== '');
+      if (hasChanges) {
+        Object.keys(dynamicSubfilterOptions).forEach(filterName => {
+          onSubfilterChange(filterName, '');
+        });
+      }
+    }
+  }, [selectedProductType, dynamicSubfilterOptions, subfilters, onSubfilterChange]);
 
   return (
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -154,11 +192,11 @@ export default function Filters({
       </div>
 
       {/* Subfiltros - aparecen cuando se selecciona un tipo de producto */}
-      {selectedProductType && (
+      {selectedProductType && dynamicSubfilterOptions && Object.keys(dynamicSubfilterOptions).length > 0 && (
         <div className="border-t pt-4">
           <h3 className="text-lg font-medium text-gray-900 mb-3">Subfiltros</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(subfilterOptions).map(([filterName, options]) => (
+            {Object.entries(dynamicSubfilterOptions).map(([filterName, options]) => (
               <div key={filterName}>
                 <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">
                   {filterName}
@@ -169,9 +207,13 @@ export default function Filters({
                   className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">Todos</option>
-                  {options.map((option) => (
-                    <option key={option} value={option}>{option}</option>
-                  ))}
+                  {options && options.length > 0 ? (
+                    options.map((option) => (
+                      <option key={option} value={option}>{option}</option>
+                    ))
+                  ) : (
+                    <option disabled>No hay opciones disponibles</option>
+                  )}
                 </select>
               </div>
             ))}
