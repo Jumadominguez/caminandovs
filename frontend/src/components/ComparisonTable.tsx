@@ -11,6 +11,7 @@ interface Product {
   size: string;
   price: number;
   supermarket: string;
+  image?: string;
 }
 
 interface ComparisonProduct extends Product {
@@ -24,6 +25,56 @@ interface ComparisonTableProps {
 }
 
 const SUPERMERCADOS = ['Carrefour', 'Jumbo', 'Disco', 'Vea', 'Dia'];
+
+function ProductTooltip({ product, children }: { product: ComparisonProduct; children: React.ReactNode }) {
+  const [isVisible, setIsVisible] = useState(false);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setIsVisible(true)}
+      onMouseLeave={() => setIsVisible(false)}
+    >
+      {children}
+      {isVisible && (
+        <div className="absolute z-50 p-4 bg-white border border-gray-200 rounded-lg shadow-lg w-80 left-0 top-full mt-2">
+          <div className="flex items-start space-x-3">
+            <div className="flex-shrink-0">
+              <img
+                src={product.image || '/placeholder-product.png'}
+                alt={product.name}
+                className="w-16 h-16 object-cover rounded-md border border-gray-200"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = 'https://via.placeholder.com/64x64?text=Producto';
+                }}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-sm font-medium text-gray-900 truncate">
+                {product.name}
+              </h4>
+              <div className="mt-1 space-y-1">
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Marca:</span> {product.brand}
+                </div>
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Variedad:</span> {product.variety}
+                </div>
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Empaque:</span> {product.package}
+                </div>
+                <div className="text-xs text-gray-600">
+                  <span className="font-medium">Tamaño:</span> {product.size}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function ComparisonTable({
   comparisonProducts,
@@ -145,12 +196,11 @@ export default function ComparisonTable({
                 <tr key={product.id} className="hover:bg-gray-50">
                   {/* Nombre del producto */}
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {product.name}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {product.brand} • {product.variety} • {product.package} • {product.size}
-                    </div>
+                    <ProductTooltip product={product}>
+                      <div className="text-sm font-medium text-gray-900 cursor-pointer hover:text-blue-600 transition-colors">
+                        {product.name}
+                      </div>
+                    </ProductTooltip>
                   </td>
 
                   {/* Contador de cantidad */}

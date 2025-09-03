@@ -10,7 +10,8 @@ export const sampleProducts = {
       package: 'Botella',
       size: '900ml',
       price: 180.00,
-      supermarket: 'Carrefour'
+      supermarket: 'Carrefour',
+      image: 'https://via.placeholder.com/150x150/FFE4B5/000000?text=Aceite+Cocinero'
     },
     {
       id: '2',
@@ -20,7 +21,8 @@ export const sampleProducts = {
       package: 'Botella',
       size: '900ml',
       price: 175.00,
-      supermarket: 'Disco'
+      supermarket: 'Disco',
+      image: 'https://via.placeholder.com/150x150/98FB98/000000?text=Aceite+Natura'
     },
     {
       id: '3',
@@ -42,7 +44,8 @@ export const sampleProducts = {
       package: 'Paquete',
       size: '500g',
       price: 95.00,
-      supermarket: 'Carrefour'
+      supermarket: 'Carrefour',
+      image: 'https://via.placeholder.com/150x150/FFDAB9/000000?text=Spaghetti+Marolio'
     },
     {
       id: '5',
