@@ -5,6 +5,7 @@ import SupermarketSelector from '../components/SupermarketSelector';
 import Filters from '../components/Filters';
 import IntegratedProductTable from '../components/IntegratedProductTable';
 import ComparisonTable from '../components/ComparisonTable';
+import FinalResultsTable from '../components/FinalResultsTable';
 import { sampleProducts } from '../data/sampleData';
 
 interface Product {
@@ -264,6 +265,12 @@ export default function Home() {
               comparisonProducts={comparisonProducts}
               onUpdateQuantity={handleUpdateQuantity}
               onRemoveProduct={handleRemoveProduct}
+              selectedSupermarkets={selectedSupermarkets}
+            />
+
+            {/* Final Results Table */}
+            <FinalResultsTable
+              comparisonProducts={comparisonProducts}
               selectedSupermarkets={selectedSupermarkets}
             />
           </div>
