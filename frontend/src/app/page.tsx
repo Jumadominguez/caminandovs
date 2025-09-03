@@ -1,4 +1,156 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import SupermarketSelector from '../components/SupermarketSelector';
+import Filters from '../components/Filters';
+import ProductTable from '../components/ProductTable';
+import ComparisonTable from '../components/ComparisonTable';
+import { sampleProducts } from '../data/sampleData';
+
+interface Product {
+  id: string;
+  name: string;
+  brand: string;
+  variety: string;
+  package: string;
+  size: string;
+  price: number;
+  supermarket: string;
+}
+
+interface ComparisonProduct extends Product {
+  quantity: number;
+}
+
 export default function Home() {
+  // Estado para supermercados seleccionados
+  const [selectedSupermarkets, setSelectedSupermarkets] = useState<string[]>([
+    'carrefour', 'disco', 'jumbo', 'dia', 'vea'
+  ]);
+
+  // Estado para filtros
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedSubcategory, setSelectedSubcategory] = useState('');
+  const [selectedProductType, setSelectedProductType] = useState('');
+  const [subfilters, setSubfilters] = useState<{ [key: string]: string }>({});
+
+  // Estado para productos
+  const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [comparisonProducts, setComparisonProducts] = useState<ComparisonProduct[]>([]);
+
+  // Manejar selección/deselección de supermercados
+  const handleSupermarketToggle = (supermarketId: string) => {
+    setSelectedSupermarkets(prev =>
+      prev.includes(supermarketId)
+        ? prev.filter(id => id !== supermarketId)
+        : [...prev, supermarketId]
+    );
+  };
+
+  // Manejar cambios en filtros
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+  };
+
+  const handleSubcategoryChange = (subcategory: string) => {
+    setSelectedSubcategory(subcategory);
+  };
+
+  const handleProductTypeChange = (productType: string) => {
+    setSelectedProductType(productType);
+  };
+
+  const handleSubfilterChange = (filterName: string, value: string) => {
+    setSubfilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  };
+
+  const handleResetFilters = () => {
+    setSelectedCategory('');
+    setSelectedSubcategory('');
+    setSelectedProductType('');
+    setSubfilters({});
+    setAvailableProducts([]);
+  };
+
+  // Manejar selección de productos
+  const handleProductToggle = (productId: string) => {
+    const product = availableProducts.find(p => p.id === productId);
+    if (!product) return;
+
+    if (selectedProductIds.includes(productId)) {
+      // Remover producto
+      setSelectedProductIds(prev => prev.filter(id => id !== productId));
+      setComparisonProducts(prev => prev.filter(p => p.id !== productId));
+    } else {
+      // Agregar producto
+      setSelectedProductIds(prev => [...prev, productId]);
+      setComparisonProducts(prev => [...prev, { ...product, quantity: 1 }]);
+    }
+  };
+
+  // Manejar cambios en cantidad
+  const handleQuantityChange = (productId: string, quantity: number) => {
+    setComparisonProducts(prev =>
+      prev.map(product =>
+        product.id === productId ? { ...product, quantity } : product
+      )
+    );
+  };
+
+  // Manejar eliminación de producto
+  const handleRemoveProduct = (productId: string) => {
+    setSelectedProductIds(prev => prev.filter(id => id !== productId));
+    setComparisonProducts(prev => prev.filter(p => p.id !== productId));
+  };
+
+  // Manejar eliminación de todos los productos
+  const handleRemoveAll = () => {
+    setSelectedProductIds([]);
+    setComparisonProducts([]);
+  };
+
+  // Manejar comparación de productos
+  const handleCompare = () => {
+    // Aquí iría la lógica para navegar a la página de comparación
+    console.log('Comparando productos:', comparisonProducts);
+    // Por ahora, solo mostramos en consola
+    alert('Funcionalidad de comparación próximamente disponible');
+  };
+
+  // Actualizar productos disponibles cuando cambia el tipo de producto
+  useEffect(() => {
+    if (selectedProductType && sampleProducts[selectedProductType as keyof typeof sampleProducts]) {
+      let products = sampleProducts[selectedProductType as keyof typeof sampleProducts];
+
+      // Filtrar por supermercados seleccionados
+      products = products.filter(product =>
+        selectedSupermarkets.includes(product.supermarket.toLowerCase())
+      );
+
+      // Aplicar subfiltros
+      if (subfilters.marca && subfilters.marca !== 'Otra') {
+        products = products.filter(product => product.brand === subfilters.marca);
+      }
+      if (subfilters.variedad) {
+        products = products.filter(product => product.variety === subfilters.variedad);
+      }
+      if (subfilters.envase) {
+        products = products.filter(product => product.package === subfilters.envase);
+      }
+      if (subfilters.tamaño) {
+        products = products.filter(product => product.size === subfilters.tamaño);
+      }
+
+      setAvailableProducts(products);
+    } else {
+      setAvailableProducts([]);
+    }
+  }, [selectedProductType, selectedSupermarkets, subfilters]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -18,102 +170,41 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Compara Precios de Supermercados
-          </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Encuentra los mejores precios en productos de tus supermercados favoritos.
-            Ahorra tiempo y dinero con comparaciones inteligentes.
-          </p>
-        </div>
+      <main className="container mx-auto px-4 py-8">
+        {/* Supermarket Selector */}
+        <SupermarketSelector
+          selectedSupermarkets={selectedSupermarkets}
+          onSupermarketToggle={handleSupermarketToggle}
+        />
 
-        {/* Search Section */}
-        <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-8">
-          <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center">
-            Busca y Compara Productos
-          </h3>
+        {/* Filters */}
+        <Filters
+          selectedCategory={selectedCategory}
+          selectedSubcategory={selectedSubcategory}
+          selectedProductType={selectedProductType}
+          subfilters={subfilters}
+          onCategoryChange={handleCategoryChange}
+          onSubcategoryChange={handleSubcategoryChange}
+          onProductTypeChange={handleProductTypeChange}
+          onSubfilterChange={handleSubfilterChange}
+          onResetFilters={handleResetFilters}
+        />
 
-          <div className="space-y-6">
-            {/* Search Input */}
-            <div>
-              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-2">
-                ¿Qué producto buscas?
-              </label>
-              <input
-                type="text"
-                id="search"
-                placeholder="Ej: leche, pan, arroz..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
+        {/* Product Table */}
+        <ProductTable
+          products={availableProducts}
+          selectedProducts={selectedProductIds}
+          onProductToggle={handleProductToggle}
+        />
 
-            {/* Supermarket Selection */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Supermercados a comparar
-              </label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {['Carrefour', 'Disco', 'Jumbo', 'Dia'].map((supermarket) => (
-                  <label key={supermarket} className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">{supermarket}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Search Button */}
-            <div className="text-center">
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
-                🔍 Buscar y Comparar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Features Preview */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">⚡</span>
-            </div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Comparación Instantánea
-            </h4>
-            <p className="text-gray-600">
-              Resultados en segundos de múltiples supermercados.
-            </p>
-          </div>
-
-          <div className="text-center">
-            <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">💰</span>
-            </div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Ahorra Dinero
-            </h4>
-            <p className="text-gray-600">
-              Encuentra siempre el mejor precio disponible.
-            </p>
-          </div>
-
-          <div className="text-center">
-            <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-              <span className="text-2xl">📱</span>
-            </div>
-            <h4 className="text-lg font-semibold text-gray-900 mb-2">
-              Fácil de Usar
-            </h4>
-            <p className="text-gray-600">
-              Interfaz intuitiva en desktop y mobile.
-            </p>
-          </div>
-        </div>
+        {/* Comparison Table */}
+        <ComparisonTable
+          products={comparisonProducts}
+          onQuantityChange={handleQuantityChange}
+          onRemoveProduct={handleRemoveProduct}
+          onRemoveAll={handleRemoveAll}
+          onCompare={handleCompare}
+        />
       </main>
 
       {/* Footer */}
