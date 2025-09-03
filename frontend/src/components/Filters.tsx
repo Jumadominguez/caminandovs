@@ -15,20 +15,20 @@ interface FiltersProps {
 }
 
 const categories = {
-  'Bebidas': {
-    'Gaseosas': ['Gaseosas de litro', 'Gaseosas de 2.25L', 'Gaseosas de 500ml'],
-    'Cervezas': ['Cervezas rubias', 'Cervezas negras', 'Cervezas artesanales'],
-    'Vinos': ['Vinos tintos', 'Vinos blancos', 'Vinos rosados']
-  },
   'Almacén': {
     'Aceites': ['Aceites de girasol', 'Aceites de oliva', 'Aceites mixtos'],
-    'Arroces': ['Arroz blanco', 'Arroz integral', 'Arroz parboil'],
-    'Fideos': ['Fideos secos', 'Fideos frescos', 'Fideos integrales']
+    'Fideos': ['Fideos secos', 'Fideos frescos', 'Fideos integrales'],
+    'Salsas': ['Salsas de tomate', 'Salsas blancas', 'Salsas especiales']
+  },
+  'Bebidas': {
+    'Gaseosas': ['Gaseosas de litro', 'Gaseosas de 2.25L', 'Gaseosas de 500ml'],
+    'Vinos': ['Vinos tintos', 'Vinos blancos', 'Vinos rosados'],
+    'Aguas': ['Aguas sin gas', 'Aguas con gas', 'Aguas saborizadas']
   },
   'Limpieza': {
     'Detergentes': ['Detergente para platos', 'Detergente para ropa', 'Detergente multiuso'],
-    'Desodorantes': ['Desodorantes ambientales', 'Desodorantes de piso', 'Desodorantes de baño'],
-    'Lavandinas': ['Lavandina común', 'Lavandina concentrada', 'Lavandina perfumada']
+    'Lavandinas': ['Lavandina común', 'Lavandina concentrada', 'Lavandina perfumada'],
+    'Limpia Vidrios': ['Limpia vidrios concentrado', 'Limpia vidrios listo', 'Limpia vidrios antibacterial']
   }
 };
 
