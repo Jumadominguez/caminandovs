@@ -74,6 +74,82 @@ export default function FinalResultsTable({
     return prices;
   };
 
+  // Función para calcular la frecuencia de precios bajos por supermercado
+  const calculateSupermarketFrequency = () => {
+    const frequency: { [supermarket: string]: number } = {};
+
+    // Inicializar frecuencia en 0
+    selectedSupermarketNames.forEach(supermarket => {
+      frequency[supermarket] = 0;
+    });
+
+    // Calcular frecuencia de precios bajos para todos los productos
+    comparisonProducts.forEach(product => {
+      const basePrices = getBasePricesBySupermarket(
+        product.id,
+        product.name,
+        product.brand,
+        product.variety,
+        product.package,
+        product.size
+      );
+
+      // Encontrar el precio más bajo para este producto
+      let lowestPrice = Infinity;
+      Object.values(basePrices).forEach(price => {
+        if (price !== null && price < lowestPrice) {
+          lowestPrice = price;
+        }
+      });
+
+      // Incrementar frecuencia para supermercados que tienen el precio más bajo
+      Object.entries(basePrices).forEach(([supermarket, price]) => {
+        if (price === lowestPrice) {
+          frequency[supermarket]++;
+        }
+      });
+    });
+
+    return frequency;
+  };
+
+  const supermarketFrequency = calculateSupermarketFrequency();
+
+  // Función para encontrar el mejor precio considerando frecuencia histórica
+  const findBestPriceForCaminandoOnline = (basePrices: { [supermarket: string]: number | null }): number => {
+    const validPrices = selectedSupermarketNames
+      .map(supermarket => ({ supermarket, price: basePrices[supermarket] }))
+      .filter(item => item.price !== null)
+      .sort((a, b) => a.price! - b.price!);
+
+    if (validPrices.length === 0) return 0;
+
+    // Si solo hay un precio, devolverlo
+    if (validPrices.length === 1) return validPrices[0].price!;
+
+    // Encontrar todos los precios más bajos
+    const lowestPrice = validPrices[0].price!;
+    const candidates = validPrices.filter(item => item.price === lowestPrice);
+
+    // Si hay múltiples candidatos con el mismo precio, elegir el que tiene más frecuencia histórica
+    if (candidates.length > 1) {
+      let bestCandidate = candidates[0];
+      let highestFrequency = supermarketFrequency[bestCandidate.supermarket] || 0;
+
+      candidates.forEach(candidate => {
+        const frequency = supermarketFrequency[candidate.supermarket] || 0;
+        if (frequency > highestFrequency) {
+          highestFrequency = frequency;
+          bestCandidate = candidate;
+        }
+      });
+
+      return bestCandidate.price!;
+    }
+
+    return lowestPrice;
+  };
+
   // Calcular totales por supermercado
   const calculateTotals = () => {
     const totals: { [supermarket: string]: number } = {};
@@ -103,10 +179,9 @@ export default function FinalResultsTable({
         }
       });
 
-      // Calcular el precio más bajo para Caminando Online
-      const prices = selectedSupermarketNames.map(supermarket => basePrices[supermarket]).filter(price => price !== null);
-      const lowestPrice = Math.min(...prices);
-      caminandoOnlineTotal += lowestPrice * product.quantity;
+      // Calcular el mejor precio para Caminando Online usando lógica de frecuencia
+      const bestPrice = findBestPriceForCaminandoOnline(basePrices);
+      caminandoOnlineTotal += bestPrice * product.quantity;
     });
 
     return { supermarketTotals: totals, caminandoOnlineTotal };

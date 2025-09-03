@@ -145,17 +145,82 @@ export default function ComparisonTable({
     return prices;
   };
 
+  // Función para calcular la frecuencia de precios bajos por supermercado
+  const calculateSupermarketFrequency = () => {
+    const frequency: { [supermarket: string]: number } = {};
+
+    // Inicializar frecuencia en 0
+    selectedSupermarketNames.forEach(supermarket => {
+      frequency[supermarket] = 0;
+    });
+
+    // Calcular frecuencia de precios bajos para todos los productos
+    comparisonProducts.forEach(product => {
+      const basePrices = getBasePricesBySupermarket(
+        product.id,
+        product.name,
+        product.brand,
+        product.variety,
+        product.package,
+        product.size
+      );
+
+      // Encontrar el precio más bajo para este producto
+      let lowestPrice = Infinity;
+      Object.values(basePrices).forEach(price => {
+        if (price !== null && price < lowestPrice) {
+          lowestPrice = price;
+        }
+      });
+
+      // Incrementar frecuencia para supermercados que tienen el precio más bajo
+      Object.entries(basePrices).forEach(([supermarket, price]) => {
+        if (price === lowestPrice) {
+          frequency[supermarket]++;
+        }
+      });
+    });
+
+    return frequency;
+  };
+
+  const supermarketFrequency = calculateSupermarketFrequency();
+
   // Función para encontrar el precio más barato y el supermercado correspondiente (solo de supermercados seleccionados)
   const findLowestPriceAndSupermarket = (prices: { [key: string]: number | null }): { price: number | null; supermarket: string | null } => {
     let lowestPrice: number | null = null;
     let lowestSupermarket: string | null = null;
+    let candidates: Array<{ supermarket: string; price: number }> = [];
 
+    // Primero encontrar todos los supermercados con el precio más bajo
     Object.entries(prices).forEach(([supermarket, price]) => {
-      if (price !== null && (lowestPrice === null || price < lowestPrice)) {
-        lowestPrice = price;
-        lowestSupermarket = supermarket;
+      if (price !== null) {
+        if (lowestPrice === null || price < lowestPrice) {
+          lowestPrice = price;
+          candidates = [{ supermarket, price }];
+        } else if (price === lowestPrice) {
+          candidates.push({ supermarket, price });
+        }
       }
     });
+
+    // Si hay múltiples candidatos con el mismo precio, elegir el que tiene más frecuencia histórica
+    if (candidates.length > 1) {
+      let bestCandidate = candidates[0];
+      let highestFrequency = supermarketFrequency[bestCandidate.supermarket] || 0;
+
+      candidates.forEach(candidate => {
+        const frequency = supermarketFrequency[candidate.supermarket] || 0;
+        if (frequency > highestFrequency) {
+          highestFrequency = frequency;
+          bestCandidate = candidate;
+        }
+      });
+
+      lowestSupermarket = bestCandidate.supermarket;
+    } else if (candidates.length === 1) {
+      lowestSupermarket = candidates[0].supermarket;
+    }
 
     return { price: lowestPrice, supermarket: lowestSupermarket };
   };
