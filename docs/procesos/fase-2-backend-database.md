@@ -1,16 +1,33 @@
-# Fase 2: Backend Core + Scraping Básico 🚧 EN PROGRESO
+# Fase 2: Integración Backend + Scraping + Conexión Frontend 🚧 EN PROGRESO
 
-[Esta fase desarrolla el backend esencial del MVP más un sistema de scraping básico para 2-3 supermercados principales, permitiendo tener datos reales para las funcionalidades core.]
+[Esta fase integra el backend con el frontend MVP completado, implementa scraping básico para 2-3 supermercados principales, y establece la conexión completa entre la UI y los datos reales.]
 
 ## 🎯 Objetivos de la Fase
 
-- ✅ Crear API REST funcional para el MVP
+- ✅ Frontend MVP completado (V0.6 - Index mockup finalizado)
+- 🚧 Integrar backend con frontend existente
 - 🚧 Implementar scraping básico de 2-3 supermercados
-- ✅ Configurar base de datos con datos reales
+- 🚧 Configurar base de datos con datos reales para alimentar la UI
 - 🚧 Establecer autenticación básica
-- 🚧 Preparar datos para las funcionalidades del MVP
+- 🚧 Conectar APIs con componentes del frontend
 
 ## 📋 Tareas Principales
+
+### 2.0 Integración Frontend-Backend ✅ MVP COMPLETADO
+
+#### Subtareas:
+- **2.0.1** ✅ Frontend MVP completado
+  - ✅ Componentes principales: Filters, ProductTable, ComparisonTable
+  - ✅ Filtros avanzados con subfiltros persistentes
+  - ✅ Tabla de resultados con algoritmos de comparación inteligente
+  - ✅ UI moderna con Tailwind CSS y diseño responsive
+  - ✅ Componente Filters corregido (bucle infinito resuelto)
+
+- **2.0.2** 🚧 Conexión API-Frontend
+  - 🚧 Configurar llamadas API desde componentes React
+  - 🚧 Implementar manejo de estados de carga y error
+  - 🚧 Integrar datos reales con componentes existentes
+  - 🚧 Testing de integración frontend-backend
 
 ### 2.1 API REST Básica para MVP ✅ COMPLETADA
 
@@ -149,42 +166,72 @@
 
 ## 📊 Criterios de Aceptación
 
+- ✅ Frontend MVP completado y funcional
 - ✅ API REST básica funcionando
-- ✅ Base de datos con categorías y productos de 2-3 supermercados
-- ✅ Scraping de categorías operativo
-- ✅ Scraping de productos por categoría funcional
-- ✅ Autenticación básica implementada
-- ✅ Endpoints de comparación funcionales
-- ✅ Servicios core probados
+- 🚧 Integración frontend-backend operativa
+- 🚧 Base de datos con categorías y productos de 2-3 supermercados
+- 🚧 Scraping de categorías operativo
+- 🚧 Scraping de productos por categoría funcional
+- 🚧 Autenticación básica implementada
+- 🚧 Endpoints de comparación funcionales conectados al frontend
+- 🚧 Servicios core probados con UI real
 
 ## 🔗 Dependencias
 
-- Requiere: Fase 1 completada
-- Debe completarse antes de iniciar Fase 3
+- ✅ Requiere: Fase 1 completada
+- ✅ Requiere: Frontend MVP completado (V0.6)
+- 🚧 Debe completarse antes de iniciar Fase 3
+- 🚧 Requiere: Conexión exitosa frontend-backend para testing
+
+## 📋 Próximos Pasos Inmediatos
+
+1. **Configurar conexión API**: Establecer llamadas HTTP desde componentes React al backend
+2. **Implementar manejo de estados**: Loading, error, y success states en componentes
+3. **Integrar datos reales**: Conectar componentes con APIs existentes
+4. **Testing de integración**: Verificar funcionamiento completo del flujo
+5. **Scraping inicial**: Comenzar con análisis de estructuras web de supermercados
+6. **Base de datos seeding**: Poblar datos iniciales para testing
 
 ## 📈 Métricas de Éxito
 
 - API response time: < 500ms
+- Frontend loading time: < 2s
 - Categorías scrapeadas: > 50 por supermercado
 - Productos scrapeados: > 1000 por supermercado
 - Cobertura de categorías: > 80%
 - Autenticación funcionando: 100%
+- Integración frontend-backend: 100% funcional
+- Componentes conectados a APIs: Todos operativos
 
 ## ⚠️ Riesgos y Mitigaciones
 
-- **Riesgo**: Estructuras de navegación complejas
+- **Riesgo**: Incompatibilidad entre APIs y componentes frontend
+  - **Mitigación**: Diseño de APIs basado en requerimientos del frontend existente
+
+- **Riesgo**: Estructuras de navegación complejas en scraping
   - **Mitigación**: Enfoque en supermercados con navegación clara
 
-- **Riesgo**: Cambios frecuentes en categorías
+- **Riesgo**: Cambios frecuentes en categorías de supermercados
   - **Mitigación**: Sistema de detección de cambios básicos
 
-- **Riesgo**: Datos de productos incompletos
+- **Riesgo**: Datos de productos incompletos o inconsistentes
   - **Mitigación**: Validaciones y reintentos automáticos
+
+- **Riesgo**: Performance degradation con datos reales
+  - **Mitigación**: Optimización de queries y caching básico
+
+- **Riesgo**: Errores de integración frontend-backend
+  - **Mitigación**: Testing exhaustivo de cada endpoint con componentes
 
 ## 📋 Checklist de Verificación
 
+- [x] Frontend MVP completado (V0.6)
+- [x] Componentes principales funcionales
+- [x] Filtros avanzados operativos
 - [ ] API endpoints básicos implementados
 - [ ] Base de datos configurada con esquemas de categorías
+- [ ] Conexión API-frontend establecida
+- [ ] Componentes conectados a datos reales
 - [ ] Scrapers de categorías funcionando para 2-3 supermercados
 - [ ] Scrapers de productos por categoría operativos
 - [ ] Pipeline de procesamiento de datos funcional
@@ -192,4 +239,5 @@
 - [ ] Servicio de comparación funcional
 - [ ] Servicio de búsqueda operativo
 - [ ] Endpoints probados manualmente
+- [ ] Integración completa frontend-backend probada
 - [ ] Datos estructurados disponibles para testing
