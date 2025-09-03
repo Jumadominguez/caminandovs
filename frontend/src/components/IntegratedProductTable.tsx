@@ -1,7 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-
 interface Product {
   id: string;
   name: string;
@@ -24,7 +22,6 @@ interface IntegratedProductTableProps {
   onQuantityChange: (productId: string, quantity: number) => void;
   onRemoveProduct: (productId: string) => void;
   onRemoveAll: () => void;
-  onCompare: () => void;
 }
 
 export default function IntegratedProductTable({
@@ -33,16 +30,10 @@ export default function IntegratedProductTable({
   onProductToggle,
   onQuantityChange,
   onRemoveProduct,
-  onRemoveAll,
-  onCompare
+  onRemoveAll
 }: IntegratedProductTableProps) {
-  const [viewMode, setViewMode] = useState<'available' | 'comparison'>('available');
-
-  const totalProducts = comparisonProducts.length;
-  const totalPrice = comparisonProducts.reduce((sum, product) => sum + (product.price * product.quantity), 0);
-
-  // Combinar productos disponibles y de comparación para vista unificada
-  const allProducts = availableProducts.map(product => ({
+  // Combinar productos disponibles con información de comparación
+  const displayProducts = availableProducts.map(product => ({
     ...product,
     isInComparison: comparisonProducts.some(cp => cp.id === product.id),
     comparisonQuantity: comparisonProducts.find(cp => cp.id === product.id)?.quantity || 0
@@ -63,29 +54,9 @@ export default function IntegratedProductTable({
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-semibold text-gray-900">
-          {viewMode === 'available' ? 'Productos Disponibles' : 'Productos a Comparar'} ({viewMode === 'available' ? availableProducts.length : totalProducts} productos)
+          Productos Disponibles ({availableProducts.length})
         </h2>
         <div className="flex space-x-2">
-          <button
-            onClick={() => setViewMode('available')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              viewMode === 'available'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Ver Disponibles
-          </button>
-          <button
-            onClick={() => setViewMode('comparison')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-              viewMode === 'comparison'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Ver Comparación ({totalProducts})
-          </button>
           {comparisonProducts.length > 0 && (
             <button
               onClick={onRemoveAll}
@@ -105,23 +76,24 @@ export default function IntegratedProductTable({
                 Producto
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Detalles
+                Marca
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Supermercado
+                Variedad
               </th>
-              {viewMode === 'comparison' && (
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Cantidad
-                </th>
-              )}
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Envase
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Tamaño
+              </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acción
               </th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {(viewMode === 'available' ? allProducts : comparisonProducts.map(cp => ({ ...cp, isInComparison: true, comparisonQuantity: cp.quantity }))).map((product) => {
+            {displayProducts.map((product) => {
               const isInComparison = product.isInComparison;
               const quantity = product.comparisonQuantity || 0;
 
@@ -135,57 +107,29 @@ export default function IntegratedProductTable({
                   <td className="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {product.name}
                   </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
-                    <div className="text-xs">
-                      <div>Marca: {product.brand}</div>
-                      <div>Variedad: {product.variety}</div>
-                      <div>Envase: {product.package} - {product.size}</div>
-                    </div>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {product.brand}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.supermarket}
+                    {product.variety}
                   </td>
-                  {viewMode === 'comparison' && (
-                    <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="flex items-center space-x-2">
-                        <button
-                          onClick={() => onQuantityChange(product.id, Math.max(1, quantity - 1))}
-                          className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm font-medium"
-                        >
-                          -
-                        </button>
-                        <span className="w-12 text-center text-sm font-medium">
-                          {quantity}
-                        </span>
-                        <button
-                          onClick={() => onQuantityChange(product.id, quantity + 1)}
-                          className="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-sm font-medium"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </td>
-                  )}
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {product.package}
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {product.size}
+                  </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    {viewMode === 'available' ? (
-                      <button
-                        onClick={() => onProductToggle(product.id)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
-                          isInComparison
-                            ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
-                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                        }`}
-                      >
-                        {isInComparison ? '✓ Agregado' : '+ Agregar'}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => onRemoveProduct(product.id)}
-                        className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors"
-                      >
-                        Eliminar
-                      </button>
-                    )}
+                    <button
+                      onClick={() => onProductToggle(product.id)}
+                      className={`px-3 py-1 rounded-full text-xs font-medium transition-all duration-200 ${
+                        isInComparison
+                          ? 'bg-blue-100 text-blue-800 hover:bg-blue-200'
+                          : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                      }`}
+                    >
+                      {isInComparison ? '✓ Agregado' : '+ Agregar'}
+                    </button>
                   </td>
                 </tr>
               );
@@ -193,22 +137,6 @@ export default function IntegratedProductTable({
           </tbody>
         </table>
       </div>
-
-      {viewMode === 'comparison' && comparisonProducts.length > 0 && (
-        <div className="border-t pt-4">
-          <div className="flex items-center justify-between">
-            <div className="text-lg font-semibold text-gray-900">
-              Total estimado: ${totalPrice.toFixed(2)}
-            </div>
-            <button
-              onClick={onCompare}
-              className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
-            >
-              🛒 Comparar Productos
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

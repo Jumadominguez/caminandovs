@@ -113,14 +113,6 @@ export default function Home() {
     setComparisonProducts([]);
   };
 
-  // Manejar comparación de productos
-  const handleCompare = () => {
-    // Aquí iría la lógica para navegar a la página de comparación
-    console.log('Comparando productos:', comparisonProducts);
-    // Por ahora, solo mostramos en consola
-    alert('Funcionalidad de comparación próximamente disponible');
-  };
-
   // Actualizar productos disponibles cuando cambia el tipo de producto
   useEffect(() => {
     console.log('Filtering products for:', selectedProductType);
@@ -262,7 +254,6 @@ export default function Home() {
             onQuantityChange={handleQuantityChange}
             onRemoveProduct={handleRemoveProduct}
             onRemoveAll={handleRemoveAll}
-            onCompare={handleCompare}
           />
         )}
       </main>
