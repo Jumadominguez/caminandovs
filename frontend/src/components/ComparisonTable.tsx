@@ -47,7 +47,7 @@ function ProductTooltip({ product, children }: { product: ComparisonProduct; chi
     >
       {children}
       {isVisible && (
-        <div className="absolute z-50 p-4 bg-white border border-gray-200 rounded-lg shadow-lg w-80 left-0 top-full mt-2">
+        <div className="absolute z-[2147483647] p-4 bg-white border border-gray-200 rounded-lg shadow-2xl w-80 left-0 top-full mt-2">
           <div className="flex items-start space-x-3">
             <div className="flex-shrink-0">
               <img
@@ -170,14 +170,14 @@ export default function ComparisonTable({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
+    <div className="bg-white rounded-lg shadow-md overflow-visible">
       <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
         <h2 className="text-xl font-semibold text-gray-900">
           Comparación de Precios ({comparisonProducts.length} productos)
         </h2>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-visible">
         <table className="min-w-full divide-y divide-gray-200">
           {/* Header */}
           <thead className="bg-gray-50">
