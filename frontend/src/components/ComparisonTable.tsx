@@ -61,13 +61,7 @@ export default function ComparisonTable({
                 Detalles
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Precio Unit.
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Cantidad
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Subtotal
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acción
@@ -88,9 +82,6 @@ export default function ComparisonTable({
                     <div>Supermercado: {product.supermarket}</div>
                   </div>
                 </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                  ${product.price.toFixed(2)}
-                </td>
                 <td className="px-4 py-4 whitespace-nowrap">
                   <div className="flex items-center space-x-2">
                     <button
@@ -109,9 +100,6 @@ export default function ComparisonTable({
                       +
                     </button>
                   </div>
-                </td>
-                <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                  ${(product.price * product.quantity).toFixed(2)}
                 </td>
                 <td className="px-4 py-4 whitespace-nowrap">
                   <button
