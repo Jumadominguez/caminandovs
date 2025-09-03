@@ -1,0 +1,30 @@
+{
+  "name": "caminando-online",
+  "version": "1.0.0",
+  "description": "Plataforma de comparación de precios de supermercados - MVP",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev --workspace=frontend\" \"npm run dev --workspace=backend\"",
+    "dev:frontend": "npm run dev --workspace=frontend",
+    "dev:backend": "npm run dev --workspace=backend",
+    "build": "npm run build --workspace=frontend && npm run build --workspace=backend",
+    "start": "concurrently \"npm run start --workspace=frontend\" \"npm run start --workspace=backend\"",
+    "install:all": "npm install",
+    "clean": "rm -rf node_modules && npm run clean --workspace=frontend && npm run clean --workspace=backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "keywords": [
+    "precios",
+    "supermercados",
+    "comparador",
+    "mvp"
+  ],
+  "author": "Caminando Online Team",
+  "license": "MIT"
+}
