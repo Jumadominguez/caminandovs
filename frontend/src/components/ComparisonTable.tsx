@@ -34,7 +34,6 @@ export default function ComparisonTable({
   }
 
   const totalProducts = products.reduce((sum, product) => sum + product.quantity, 0);
-  const totalPrice = products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
 
   return (
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -117,10 +116,7 @@ export default function ComparisonTable({
 
       {/* Total y botón de comparar */}
       <div className="border-t pt-4">
-        <div className="flex items-center justify-between">
-          <div className="text-lg font-semibold text-gray-900">
-            Total estimado: ${totalPrice.toFixed(2)}
-          </div>
+        <div className="flex items-center justify-end">
           <button
             onClick={onCompare}
             className="px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors"
