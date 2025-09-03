@@ -118,3 +118,30 @@ export const getComparisonHistory = async (req: Request, res: Response) => {
     });
   }
 };
+
+// GET /api/comparisons/:id - Obtener comparación específica
+export const getComparisonById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const comparison = await Comparison.findById(id);
+
+    if (!comparison) {
+      return res.status(404).json({
+        success: false,
+        message: 'Comparación no encontrada'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: comparison,
+      message: 'Comparación obtenida exitosamente'
+    });
+  } catch (error) {
+    console.error('Error getting comparison:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener comparación'
+    });
+  }
+};

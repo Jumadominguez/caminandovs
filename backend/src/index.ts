@@ -8,15 +8,31 @@ import productRoutes from './routes/products';
 import comparisonRoutes from './routes/comparisons';
 import supermarketRoutes from './routes/supermarkets';
 
+// Importar middlewares
+import { apiResponse, errorHandler } from './middlewares/apiMiddleware';
+
 // Cargar variables de entorno
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
+// Middlewares esenciales
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// Middleware de logging básico
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  next();
+});
+
+// Middleware para respuestas API consistentes
+app.use(apiResponse);
 
 // Conexión a MongoDB
 const connectDB = async () => {
@@ -38,11 +54,14 @@ app.use('/api/supermarkets', supermarketRoutes);
 // Rutas básicas
 app.get('/', (req, res) => {
   res.json({
-    message: '🚀 API de Caminando Online - MVP Fase 1',
-    version: '1.0.0',
+    message: '🚀 API de Caminando Online - MVP Fase 2',
+    version: '2.0.0',
     status: 'running',
     endpoints: {
       products: '/api/products',
+      'products/search': '/api/products/search',
+      'products/categories': '/api/products/categories',
+      'products/compare': '/api/products/compare',
       comparisons: '/api/comparisons',
       supermarkets: '/api/supermarkets',
       health: '/health'
@@ -58,6 +77,9 @@ app.get('/health', (req, res) => {
     uptime: process.uptime()
   });
 });
+
+// Middleware de manejo de errores (debe ir al final)
+app.use(errorHandler);
 
 // Iniciar servidor
 const startServer = async () => {
