@@ -30,21 +30,39 @@ export default function ComparisonTable({
   onUpdateQuantity,
   onRemoveProduct
 }: ComparisonTableProps) {
-  // Función para obtener el precio más barato de un producto
-  const getLowestPrice = (productName: string, brand: string, variety: string, packageType: string, size: string) => {
-    // Aquí iría la lógica para buscar el precio más barato
-    // Por ahora retornamos un precio de ejemplo
-    return Math.floor(Math.random() * 50) + 50; // Precio entre 50 y 100
-  };
+  // Estado para almacenar precios base por producto
+  const [basePrices, setBasePrices] = useState<{ [key: string]: { [supermarket: string]: number | null } }>({});
 
-  // Función para obtener precios por supermercado
-  const getPricesBySupermarket = (productName: string, brand: string, variety: string, packageType: string, size: string) => {
+  // Función para obtener precios base por supermercado (solo se genera una vez por producto)
+  const getBasePricesBySupermarket = (productId: string, productName: string, brand: string, variety: string, packageType: string, size: string) => {
+    if (basePrices[productId]) {
+      return basePrices[productId];
+    }
+
     const prices: { [key: string]: number | null } = {};
 
     SUPERMERCADOS.forEach(supermarket => {
       // Aquí iría la lógica para buscar el precio específico por supermercado
-      // Por ahora generamos precios aleatorios
+      // Por ahora generamos precios aleatorios una sola vez
       prices[supermarket] = Math.floor(Math.random() * 30) + 70; // Precio entre 70 y 100
+    });
+
+    // Guardar los precios base
+    setBasePrices(prev => ({
+      ...prev,
+      [productId]: prices
+    }));
+
+    return prices;
+  };
+
+  // Función para obtener precios finales multiplicados por cantidad
+  const getPricesBySupermarket = (productId: string, productName: string, brand: string, variety: string, packageType: string, size: string, quantity: number) => {
+    const basePrices = getBasePricesBySupermarket(productId, productName, brand, variety, packageType, size);
+    const prices: { [key: string]: number | null } = {};
+
+    Object.entries(basePrices).forEach(([supermarket, basePrice]) => {
+      prices[supermarket] = basePrice ? basePrice * quantity : null;
     });
 
     return prices;
@@ -111,11 +129,13 @@ export default function ComparisonTable({
           <tbody className="bg-white divide-y divide-gray-200">
             {comparisonProducts.map((product) => {
               const prices = getPricesBySupermarket(
+                product.id,
                 product.name,
                 product.brand,
                 product.variety,
                 product.package,
-                product.size
+                product.size,
+                product.quantity
               );
               const lowestPriceInfo = findLowestPriceAndSupermarket(prices);
               const lowestPrice = lowestPriceInfo.price;
