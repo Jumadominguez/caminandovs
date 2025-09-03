@@ -33,7 +33,7 @@ export default function ComparisonTable({
     return null;
   }
 
-  const totalProducts = products.reduce((sum, product) => sum + product.quantity, 0);
+  const totalProducts = products.length;
 
   return (
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
