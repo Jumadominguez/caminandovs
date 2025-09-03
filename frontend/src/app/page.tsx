@@ -118,31 +118,13 @@ export default function Home() {
   useEffect(() => {
     console.log('Filtering products for:', selectedProductType);
     console.log('Current subfilters:', subfilters);
-    console.log('Selected supermarkets:', selectedSupermarkets);
 
     if (selectedProductType && sampleProducts[selectedProductType as keyof typeof sampleProducts]) {
       let products = sampleProducts[selectedProductType as keyof typeof sampleProducts];
       console.log('Initial products count:', products.length);
 
-      // Filtrar por supermercados seleccionados
-      console.log('Filtering by supermarkets:', selectedSupermarkets);
-      const beforeSupermarketFilter = products.length;
-      products = products.filter(product => {
-        const productSupermarket = product.supermarket.toLowerCase();
-        const matches = selectedSupermarkets.some(sm => {
-          const selectedSm = sm.toLowerCase();
-          const match = selectedSm === productSupermarket;
-          if (!match) {
-            console.log('Supermarket filter: product supermarket:', productSupermarket, 'does not match selected:', selectedSm);
-          }
-          return match;
-        });
-        if (!matches) {
-          console.log('Product', product.name, 'supermarket:', product.supermarket, 'not in selected supermarkets');
-        }
-        return matches;
-      });
-      console.log('After supermarket filter:', products.length, '(filtered out:', beforeSupermarketFilter - products.length, ')');
+      // NO filtrar por supermercados seleccionados - los productos deben mostrarse siempre
+      // La tabla de comparación se encargará de mostrar solo las columnas de supermercados seleccionados
 
       // Aplicar subfiltros
       if (subfilters.marca) {
@@ -282,6 +264,7 @@ export default function Home() {
               comparisonProducts={comparisonProducts}
               onUpdateQuantity={handleUpdateQuantity}
               onRemoveProduct={handleRemoveProduct}
+              selectedSupermarkets={selectedSupermarkets}
             />
           </div>
         )}

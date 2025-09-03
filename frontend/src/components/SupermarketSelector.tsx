@@ -9,10 +9,10 @@ interface SupermarketSelectorProps {
 
 const supermarkets = [
   { id: 'carrefour', name: 'Carrefour', logo: '🏪' },
-  { id: 'disco', name: 'Disco', logo: '🛒' },
   { id: 'jumbo', name: 'Jumbo', logo: '🏬' },
-  { id: 'dia', name: 'Dia', logo: '🏪' },
-  { id: 'vea', name: 'Vea', logo: '🛍️' }
+  { id: 'disco', name: 'Disco', logo: '🛒' },
+  { id: 'vea', name: 'Vea', logo: '🛍️' },
+  { id: 'dia', name: 'Dia', logo: '🏪' }
 ];
 
 export default function SupermarketSelector({ selectedSupermarkets, onSupermarketToggle }: SupermarketSelectorProps) {

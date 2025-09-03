@@ -22,9 +22,19 @@ interface ComparisonTableProps {
   comparisonProducts: ComparisonProduct[];
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemoveProduct: (productId: string) => void;
+  selectedSupermarkets?: string[];
 }
 
 const SUPERMERCADOS = ['Carrefour', 'Jumbo', 'Disco', 'Vea', 'Dia'];
+
+// Mapeo entre IDs del selector y nombres de supermercados
+const SUPERMERCADO_MAPPING: { [key: string]: string } = {
+  'carrefour': 'Carrefour',
+  'jumbo': 'Jumbo',
+  'disco': 'Disco',
+  'vea': 'Vea',
+  'dia': 'Dia'
+};
 
 function ProductTooltip({ product, children }: { product: ComparisonProduct; children: React.ReactNode }) {
   const [isVisible, setIsVisible] = useState(false);
@@ -79,10 +89,26 @@ function ProductTooltip({ product, children }: { product: ComparisonProduct; chi
 export default function ComparisonTable({
   comparisonProducts,
   onUpdateQuantity,
-  onRemoveProduct
+  onRemoveProduct,
+  selectedSupermarkets = ['carrefour', 'jumbo', 'disco', 'vea', 'dia']
 }: ComparisonTableProps) {
+  // Si no hay supermercados seleccionados, no mostrar la tabla
+  if (selectedSupermarkets.length === 0) {
+    return null;
+  }
+
   // Estado para almacenar precios base por producto
   const [basePrices, setBasePrices] = useState<{ [key: string]: { [supermarket: string]: number | null } }>({});
+
+  // Convertir IDs de supermercados seleccionados a nombres para mostrar (manteniendo orden fijo)
+  const selectedSupermarketNames = selectedSupermarkets
+    .map(id => SUPERMERCADO_MAPPING[id])
+    .filter(Boolean)
+    .sort((a, b) => {
+      // Mantener orden fijo: Carrefour, Jumbo, Disco, Vea, Dia
+      const order = ['Carrefour', 'Jumbo', 'Disco', 'Vea', 'Dia'];
+      return order.indexOf(a) - order.indexOf(b);
+    });
 
   // Función para obtener precios base por supermercado (solo se genera una vez por producto)
   const getBasePricesBySupermarket = (productId: string, productName: string, brand: string, variety: string, packageType: string, size: string) => {
@@ -92,7 +118,7 @@ export default function ComparisonTable({
 
     const prices: { [key: string]: number | null } = {};
 
-    SUPERMERCADOS.forEach(supermarket => {
+    selectedSupermarketNames.forEach(supermarket => {
       // Aquí iría la lógica para buscar el precio específico por supermercado
       // Por ahora generamos precios aleatorios una sola vez
       prices[supermarket] = Math.floor(Math.random() * 30) + 70; // Precio entre 70 y 100
@@ -119,7 +145,7 @@ export default function ComparisonTable({
     return prices;
   };
 
-  // Función para encontrar el precio más barato y el supermercado correspondiente
+  // Función para encontrar el precio más barato y el supermercado correspondiente (solo de supermercados seleccionados)
   const findLowestPriceAndSupermarket = (prices: { [key: string]: number | null }): { price: number | null; supermarket: string | null } => {
     let lowestPrice: number | null = null;
     let lowestSupermarket: string | null = null;
@@ -162,7 +188,7 @@ export default function ComparisonTable({
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Cantidad
               </th>
-              {SUPERMERCADOS.map(supermarket => (
+              {selectedSupermarketNames.map(supermarket => (
                 <th key={supermarket} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   {supermarket}
                 </th>
@@ -225,7 +251,7 @@ export default function ComparisonTable({
                   </td>
 
                   {/* Precios por supermercado */}
-                  {SUPERMERCADOS.map(supermarket => {
+                  {selectedSupermarketNames.map(supermarket => {
                     const price = prices[supermarket];
                     const isLowest = price === lowestPrice;
 
