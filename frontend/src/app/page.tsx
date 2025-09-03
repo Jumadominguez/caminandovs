@@ -281,6 +281,7 @@ export default function Home() {
           selectedProductType={selectedProductType}
           subfilters={subfilters}
           availableProducts={availableProducts}
+          hasAvailableProducts={availableProducts.length > 0}
           onCategoryChange={handleCategoryChange}
           onSubcategoryChange={handleSubcategoryChange}
           onProductTypeChange={handleProductTypeChange}

@@ -8,6 +8,7 @@ interface FiltersProps {
   selectedProductType: string;
   subfilters: { [key: string]: string };
   availableProducts: any[];
+  hasAvailableProducts: boolean;
   onCategoryChange: (category: string) => void;
   onSubcategoryChange: (subcategory: string) => void;
   onProductTypeChange: (productType: string) => void;
@@ -46,6 +47,7 @@ export default function Filters({
   selectedProductType,
   subfilters,
   availableProducts,
+  hasAvailableProducts,
   onCategoryChange,
   onSubcategoryChange,
   onProductTypeChange,
@@ -53,6 +55,7 @@ export default function Filters({
   onResetFilters
 }: FiltersProps) {
   const [availableProductTypes, setAvailableProductTypes] = useState<string[]>([]);
+  const [lastValidSubfilterOptions, setLastValidSubfilterOptions] = useState<{ [key: string]: string[] }>({});
 
   // Crear estructura jerárquica para el select único
   const hierarchicalOptions = Object.entries(categories).map(([category, subcategories]) => ({
@@ -64,8 +67,8 @@ export default function Filters({
   const generateSubfilterOptions = (): { [key: string]: string[] } => {
     console.log('Generating subfilter options for products:', availableProducts?.length || 0);
     if (!availableProducts || availableProducts.length === 0) {
-      console.log('No available products for subfilters');
-      return {};
+      console.log('No available products for subfilters, using last valid options');
+      return lastValidSubfilterOptions;
     }
 
     const options = {
@@ -80,6 +83,15 @@ export default function Filters({
   };
 
   const dynamicSubfilterOptions = generateSubfilterOptions();
+
+  // Guardar las opciones válidas para usar cuando no haya productos
+  useEffect(() => {
+    if (availableProducts && availableProducts.length > 0 && dynamicSubfilterOptions) {
+      if (Object.keys(dynamicSubfilterOptions).some(key => (dynamicSubfilterOptions as any)[key].length > 0)) {
+        setLastValidSubfilterOptions(dynamicSubfilterOptions);
+      }
+    }
+  }, [availableProducts, dynamicSubfilterOptions]);
 
   // Crear valor combinado para el select
   const selectedValue = selectedCategory && selectedSubcategory
@@ -201,7 +213,12 @@ export default function Filters({
       {/* Subfiltros - aparecen cuando se selecciona un tipo de producto */}
       {selectedProductType && dynamicSubfilterOptions && Object.keys(dynamicSubfilterOptions).length > 0 && (
         <div className="border-t pt-4">
-          <h3 className="text-lg font-medium text-gray-900 mb-3">Subfiltros</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-3">
+            Subfiltros
+            {!hasAvailableProducts && (
+              <span className="text-sm text-gray-500 ml-2">(Desactivados - no hay productos disponibles)</span>
+            )}
+          </h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.entries(dynamicSubfilterOptions).map(([filterName, options]) => (
               <div key={filterName}>
@@ -210,8 +227,11 @@ export default function Filters({
                 </label>
                 <select
                   value={subfilters[filterName] || ''}
-                  onChange={(e) => onSubfilterChange(filterName, e.target.value)}
-                  className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                  onChange={(e) => hasAvailableProducts ? onSubfilterChange(filterName, e.target.value) : undefined}
+                  disabled={!hasAvailableProducts}
+                  className={`w-full px-2 py-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-transparent ${
+                    !hasAvailableProducts ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
+                  }`}
                 >
                   <option value="">Todos</option>
                   {options && options.length > 0 ? (
