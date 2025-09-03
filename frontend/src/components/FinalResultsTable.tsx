@@ -282,6 +282,19 @@ export default function FinalResultsTable({
           menos que el promedio de los supermercados
         </p>
       </div>
+
+      {/* Botón de Compra */}
+      <div className="mt-6 text-center">
+        <button
+          disabled
+          className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 px-8 rounded-lg shadow-lg text-xl opacity-75 cursor-not-allowed transform hover:scale-105 transition-all duration-200"
+        >
+          🚀 ¡Compra Caminando! (Próximamente 😉)
+        </button>
+        <p className="text-sm text-gray-500 mt-2">
+          Esta funcionalidad estará disponible próximamente
+        </p>
+      </div>
     </div>
   );
 }
