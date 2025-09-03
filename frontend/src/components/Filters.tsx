@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 interface FiltersProps {
   selectedCategory: string;
@@ -64,11 +64,17 @@ export default function Filters({
   }));
 
   // Generar subfiltros dinámicos basados en productos disponibles
-  const generateSubfilterOptions = (): { [key: string]: string[] } => {
+  const dynamicSubfilterOptions = useMemo(() => {
     console.log('Generating subfilter options for products:', availableProducts?.length || 0);
     if (!availableProducts || availableProducts.length === 0) {
-      console.log('No available products for subfilters, using last valid options');
-      return lastValidSubfilterOptions;
+      console.log('No available products for subfilters');
+      // Return object with empty arrays when no products
+      return {
+        marca: [],
+        variedad: [],
+        envase: [],
+        tamaño: []
+      };
     }
 
     const options = {
@@ -80,18 +86,7 @@ export default function Filters({
 
     console.log('Generated subfilter options:', options);
     return options;
-  };
-
-  const dynamicSubfilterOptions = generateSubfilterOptions();
-
-  // Guardar las opciones válidas para usar cuando no haya productos
-  useEffect(() => {
-    if (availableProducts && availableProducts.length > 0 && dynamicSubfilterOptions) {
-      if (Object.keys(dynamicSubfilterOptions).some(key => (dynamicSubfilterOptions as any)[key].length > 0)) {
-        setLastValidSubfilterOptions(dynamicSubfilterOptions);
-      }
-    }
-  }, [availableProducts, dynamicSubfilterOptions]);
+  }, [availableProducts]);
 
   // Crear valor combinado para el select
   const selectedValue = selectedCategory && selectedSubcategory
@@ -211,7 +206,7 @@ export default function Filters({
       </div>
 
       {/* Subfiltros - aparecen cuando se selecciona un tipo de producto */}
-      {selectedProductType && dynamicSubfilterOptions && Object.keys(dynamicSubfilterOptions).length > 0 && (
+      {selectedProductType && (
         <div className="border-t pt-4">
           <h3 className="text-lg font-medium text-gray-900 mb-3">
             Subfiltros
@@ -233,7 +228,9 @@ export default function Filters({
                     !hasAvailableProducts ? 'bg-gray-100 cursor-not-allowed opacity-60' : ''
                   }`}
                 >
-                  <option value="">Todos</option>
+                  <option value="">
+                    {!hasAvailableProducts ? 'No disponible' : 'Todos'}
+                  </option>
                   {options && options.length > 0 ? (
                     options.map((option) => (
                       <option key={option} value={option}>{option}</option>
