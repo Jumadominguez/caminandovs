@@ -57,12 +57,6 @@ export default function ProductTable({ products, selectedProducts, onProductTogg
                 Tamaño
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Precio
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Supermercado
-              </th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Acción
               </th>
             </tr>
@@ -92,12 +86,6 @@ export default function ProductTable({ products, selectedProducts, onProductTogg
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     {product.size}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-900 font-semibold">
-                    ${product.price.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.supermarket}
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                     <button
