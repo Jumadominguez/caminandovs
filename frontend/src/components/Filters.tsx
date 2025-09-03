@@ -50,25 +50,44 @@ export default function Filters({
   onSubfilterChange,
   onResetFilters
 }: FiltersProps) {
-  const [availableSubcategories, setAvailableSubcategories] = useState<string[]>([]);
   const [availableProductTypes, setAvailableProductTypes] = useState<string[]>([]);
 
-  useEffect(() => {
-    if (selectedCategory) {
-      setAvailableSubcategories(Object.keys(categories[selectedCategory as keyof typeof categories]));
-      setAvailableProductTypes([]);
+  // Crear estructura jerárquica para el select único
+  const hierarchicalOptions = Object.entries(categories).map(([category, subcategories]) => ({
+    category,
+    subcategories: Object.keys(subcategories)
+  }));
+
+  // Crear valor combinado para el select
+  const selectedValue = selectedCategory && selectedSubcategory
+    ? `${selectedCategory}|${selectedSubcategory}`
+    : '';
+
+  const handleHierarchicalChange = (value: string) => {
+    if (value === '') {
+      onCategoryChange('');
       onSubcategoryChange('');
       onProductTypeChange('');
+      return;
     }
-  }, [selectedCategory, onSubcategoryChange, onProductTypeChange]);
+
+    const [category, subcategory] = value.split('|');
+    onCategoryChange(category);
+    onSubcategoryChange(subcategory);
+    onProductTypeChange('');
+  };
 
   useEffect(() => {
     if (selectedCategory && selectedSubcategory) {
       const categoryData = categories[selectedCategory as keyof typeof categories];
-      setAvailableProductTypes(categoryData[selectedSubcategory as keyof typeof categoryData]);
-      onProductTypeChange('');
+      if (categoryData && selectedSubcategory) {
+        setAvailableProductTypes(categoryData[selectedSubcategory as keyof typeof categoryData] || []);
+        // No resetear selectedProductType aquí, mantener la selección actual
+      }
+    } else {
+      setAvailableProductTypes([]);
     }
-  }, [selectedCategory, selectedSubcategory, onProductTypeChange]);
+  }, [selectedCategory, selectedSubcategory]);
 
   return (
     <section className="bg-white rounded-lg shadow-lg p-6 mb-6">
@@ -86,16 +105,25 @@ export default function Filters({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Categorías
+            Categoría y Subcategoría
           </label>
           <select
-            value={selectedCategory}
-            onChange={(e) => onCategoryChange(e.target.value)}
+            value={selectedValue}
+            onChange={(e) => handleHierarchicalChange(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="">Seleccionar categoría...</option>
-            {Object.keys(categories).map((category) => (
-              <option key={category} value={category}>{category}</option>
+            <option value="">Seleccionar categoría y subcategoría...</option>
+            {hierarchicalOptions.map((option) => (
+              <optgroup key={option.category} label={option.category}>
+                {option.subcategories.map((subcategory) => (
+                  <option
+                    key={`${option.category}|${subcategory}`}
+                    value={`${option.category}|${subcategory}`}
+                  >
+                    {subcategory}
+                  </option>
+                ))}
+              </optgroup>
             ))}
           </select>
         </div>
@@ -111,33 +139,19 @@ export default function Filters({
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
             <option value="">
-              {selectedSubcategory ? 'Seleccionar tipo...' : 'Primero selecciona subcategoría'}
+              {selectedSubcategory ? 'Seleccionar tipo de producto...' : 'Primero selecciona subcategoría'}
             </option>
             {availableProductTypes.map((type) => (
               <option key={type} value={type}>{type}</option>
             ))}
           </select>
+          {selectedSubcategory && !selectedProductType && (
+            <p className="text-xs text-gray-500 mt-1">
+              Selecciona un tipo de producto para ver los filtros avanzados y productos disponibles
+            </p>
+          )}
         </div>
       </div>
-
-      {/* Mostrar subcategorías cuando se selecciona una categoría */}
-      {selectedCategory && (
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Subcategorías
-          </label>
-          <select
-            value={selectedSubcategory}
-            onChange={(e) => onSubcategoryChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Seleccionar subcategoría...</option>
-            {availableSubcategories.map((subcategory) => (
-              <option key={subcategory} value={subcategory}>{subcategory}</option>
-            ))}
-          </select>
-        </div>
-      )}
 
       {/* Subfiltros - aparecen cuando se selecciona un tipo de producto */}
       {selectedProductType && (
