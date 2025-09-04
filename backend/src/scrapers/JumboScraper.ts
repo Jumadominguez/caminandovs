@@ -1,4 +1,13 @@
 import puppeteer, { Browser, Page } from 'puppeteer';
+import axios from 'axios';
+
+interface ScrapedProduct {
+  name: string;
+  price: number;
+  image?: string;
+  description?: string;
+  unit?: string;
+}
 
 export class JumboScraper {
   private browser: Browser | null = null;
@@ -212,7 +221,142 @@ export class JumboScraper {
   }
 
   /**
-   * Ejecuta el scraper completo: abre menú y hace click en Almacén
+   * Extrae productos de la página de categoría Almacén
+   */
+  async scrapeAlmacenProducts(): Promise<ScrapedProduct[]> {
+    if (!this.page) {
+      throw new Error('Scraper no inicializado. Llama a initialize() primero.');
+    }
+
+    try {
+      console.log('🛒 Extrayendo productos de la categoría Almacén...');
+
+      // Esperar a que la página de productos cargue completamente
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Scroll para cargar más productos
+      await this.page.evaluate(() => {
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Extraer productos usando JavaScript en el navegador
+      const products = await this.page.evaluate(() => {
+        const productElements = document.querySelectorAll('[data-testid="product-card"], .product-item, .product-card, [class*="product"]');
+        const scrapedProducts: ScrapedProduct[] = [];
+
+        productElements.forEach((element, index) => {
+          if (index >= 20) return; // Limitar a 20 productos para la prueba
+
+          try {
+            // Buscar nombre del producto
+            const nameElement = element.querySelector('[data-testid="product-name"], .product-name, .product-title, h3, h4, [class*="name"]');
+            const name = nameElement?.textContent?.trim();
+
+            // Buscar precio
+            const priceElement = element.querySelector('[data-testid="product-price"], .product-price, .price, [class*="price"]');
+            let price = 0;
+
+            if (priceElement) {
+              const priceText = priceElement.textContent?.trim() || '';
+              // Extraer números del precio (manejar formato argentino)
+              const priceMatch = priceText.match(/[\d.,]+/);
+              if (priceMatch) {
+                const cleanPrice = priceMatch[0].replace(/\./g, '').replace(',', '.');
+                price = parseFloat(cleanPrice) || 0;
+              }
+            }
+
+            // Buscar imagen
+            const imageElement = element.querySelector('img');
+            const image = imageElement?.getAttribute('src') || imageElement?.getAttribute('data-src') || undefined;
+
+            // Buscar descripción
+            const descElement = element.querySelector('[data-testid="product-description"], .product-description, .description, [class*="desc"]');
+            const description = descElement?.textContent?.trim();
+
+            // Buscar unidad/peso
+            const unitElement = element.querySelector('.product-unit, .unit, [class*="unit"], [class*="weight"]');
+            const unit = unitElement?.textContent?.trim() || 'unidad';
+
+            if (name && price > 0) {
+              scrapedProducts.push({
+                name,
+                price,
+                image,
+                description,
+                unit
+              });
+            }
+          } catch (error) {
+            console.log(`Error procesando producto ${index}:`, error);
+          }
+        });
+
+        return scrapedProducts;
+      });
+
+      console.log(`✅ Extraídos ${products.length} productos de Almacén`);
+      return products;
+
+    } catch (error) {
+      console.error('❌ Error extrayendo productos:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Guarda los productos scrapeados en la base de datos
+   */
+  async saveProductsToDatabase(products: ScrapedProduct[]): Promise<void> {
+    try {
+      console.log(`💾 Guardando ${products.length} productos en la base de datos...`);
+
+      const apiUrl = process.env.API_URL || 'http://localhost:5000';
+
+      let savedCount = 0;
+      let errorCount = 0;
+
+      for (const product of products) {
+        try {
+          const productData = {
+            name: product.name,
+            price: product.price,
+            supermarket: 'Jumbo',
+            category: 'Almacén',
+            image: product.image,
+            description: product.description,
+            unit: product.unit
+          };
+
+          const response = await axios.post(`${apiUrl}/api/products`, productData);
+
+          if (response.data.success) {
+            savedCount++;
+            console.log(`✅ Guardado: ${product.name} - $${product.price}`);
+          } else {
+            errorCount++;
+            console.log(`❌ Error guardando: ${product.name}`);
+          }
+        } catch (error) {
+          errorCount++;
+          console.log(`❌ Error en request para ${product.name}:`, error instanceof Error ? error.message : String(error));
+        }
+
+        // Pequeña pausa entre requests para no sobrecargar la API
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+
+      console.log(`📊 Resultados: ${savedCount} guardados, ${errorCount} errores`);
+
+    } catch (error) {
+      console.error('❌ Error guardando productos en BD:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ejecuta el scraper completo: abre menú, hace click en Almacén, extrae y guarda productos
    */
   async run(): Promise<void> {
     try {
@@ -222,6 +366,14 @@ export class JumboScraper {
       await this.navigateToHome();
       await this.openCategoryMenu();
       await this.clickAlmacenCategory();
+
+      // Extraer productos de Almacén
+      const products = await this.scrapeAlmacenProducts();
+
+      // Guardar productos en la base de datos
+      if (products.length > 0) {
+        await this.saveProductsToDatabase(products);
+      }
 
       console.log('🎉 Scraper ejecutado exitosamente');
 
