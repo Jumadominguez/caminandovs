@@ -12,14 +12,138 @@ const supermarkets = [
   {
     name: 'Jumbo',
     code: 'jumbo',
-    baseUrl: 'https://www.jumbo.cl',
-    isActive: true
+    baseUrl: 'https://www.jumbo.com.ar',
+    isActive: true,
+    logo: 'https://www.jumbo.com.ar/images/logo-jumbo.png',
+    logoTransparent: 'https://logos-world.net/wp-content/uploads/2020/11/Jumbo-Logo.png',
+    description: 'Jumbo es una cadena de supermercados líder en Argentina, parte del Grupo Cencosud, especializada en ofrecer productos frescos, de calidad y con el mejor servicio.',
+    website: 'https://www.jumbo.com.ar',
+    metaData: {
+      coverage: ['Buenos Aires', 'Córdoba', 'Santa Fe', 'Mendoza', 'Tucumán'],
+      services: ['Delivery', 'Retiro en tienda', 'Compra online', 'Tarjeta Jumbo Más'],
+      foundedYear: 1974,
+      totalStores: 150,
+      headquarters: 'Buenos Aires',
+      parentCompany: 'Cencosud',
+      marketPosition: 'Líder en Argentina',
+      certifications: ['ISO 9001', 'ISO 14001']
+    },
+    socialMedia: {
+      facebook: 'https://www.facebook.com/JumboArgentina',
+      instagram: 'https://www.instagram.com/jumboargentina',
+      twitter: 'https://twitter.com/JumboArgentina',
+      youtube: 'https://www.youtube.com/user/JumboArgentina'
+    },
+    contactInfo: {
+      customerService: '0810-888-5686',
+      whatsapp: '+5491123456789'
+    }
   },
   {
-    name: 'Líder',
-    code: 'lider',
-    baseUrl: 'https://www.lider.cl',
-    isActive: true
+    name: 'Carrefour',
+    code: 'carrefour',
+    baseUrl: 'https://www.carrefour.com.ar',
+    isActive: true,
+    logo: 'https://www.carrefour.com.ar/images/logo-carrefour.png',
+    logoTransparent: 'https://logos-world.net/wp-content/uploads/2020/11/Carrefour-Logo.png',
+    description: 'Carrefour es una multinacional francesa de distribución minorista que opera en Argentina con una amplia gama de productos y servicios.',
+    website: 'https://www.carrefour.com.ar',
+    metaData: {
+      coverage: ['Buenos Aires', 'Córdoba', 'Santa Fe', 'Mendoza', 'Tucumán', 'Salta'],
+      services: ['Delivery', 'Retiro en tienda', 'Compra online', 'Club Carrefour'],
+      foundedYear: 1959,
+      totalStores: 120,
+      headquarters: 'Buenos Aires',
+      parentCompany: 'Carrefour Group',
+      marketPosition: 'Multinacional líder',
+      certifications: ['ISO 9001', 'ISO 22000']
+    },
+    socialMedia: {
+      facebook: 'https://www.facebook.com/CarrefourArgentina',
+      instagram: 'https://www.instagram.com/carrefourargentina',
+      twitter: 'https://twitter.com/CarrefourArg',
+      youtube: 'https://www.youtube.com/user/CarrefourArgentina'
+    },
+    contactInfo: {
+      customerService: '0810-444-2673',
+      whatsapp: '+5491123456789'
+    }
+  },
+  {
+    name: 'Disco',
+    code: 'disco',
+    baseUrl: 'https://www.disco.com.ar',
+    isActive: true,
+    logo: 'https://www.disco.com.ar/images/logo-disco.png',
+    logoTransparent: 'https://logos-world.net/wp-content/uploads/2020/11/Disco-Logo.png',
+    description: 'Disco es una cadena de supermercados argentina con presencia regional, ofreciendo productos de calidad a precios accesibles.',
+    website: 'https://www.disco.com.ar',
+    metaData: {
+      coverage: ['Buenos Aires', 'La Plata', 'Mar del Plata', 'Bahía Blanca'],
+      services: ['Delivery', 'Retiro en tienda', 'Compra online'],
+      foundedYear: 1960,
+      totalStores: 80,
+      headquarters: 'Buenos Aires',
+      parentCompany: 'Walmart',
+      marketPosition: 'Cadena regional',
+      certifications: ['ISO 9001']
+    },
+    socialMedia: {
+      facebook: 'https://www.facebook.com/DiscoArgentina',
+      instagram: 'https://www.instagram.com/discoargentina'
+    },
+    contactInfo: {
+      customerService: '0810-122-3472'
+    }
+  },
+  {
+    name: 'Dia',
+    code: 'dia',
+    baseUrl: 'https://www.dia.com.ar',
+    isActive: true,
+    logo: 'https://www.dia.com.ar/images/logo-dia.png',
+    logoTransparent: 'https://logos-world.net/wp-content/uploads/2020/11/Dia-Logo.png',
+    description: 'Dia es una cadena de supermercados de proximidad española presente en Argentina, especializada en productos frescos y de conveniencia.',
+    website: 'https://www.dia.com.ar',
+    metaData: {
+      coverage: ['Buenos Aires', 'Córdoba', 'Rosario', 'La Plata'],
+      services: ['Delivery', 'Retiro en tienda', 'Compra online'],
+      foundedYear: 1979,
+      totalStores: 200,
+      headquarters: 'Madrid, España',
+      parentCompany: 'Dia Group',
+      marketPosition: 'Proximidad y conveniencia',
+      certifications: ['ISO 9001', 'ISO 14001']
+    },
+    socialMedia: {
+      facebook: 'https://www.facebook.com/DiaArgentina',
+      instagram: 'https://www.instagram.com/diaargentina'
+    },
+    contactInfo: {
+      customerService: '0810-122-3342'
+    }
+  },
+  {
+    name: 'Vea',
+    code: 'vea',
+    baseUrl: 'https://www.vea.com.ar',
+    isActive: true,
+    logo: 'https://www.vea.com.ar/images/logo-vea.png',
+    logoTransparent: 'https://logos-world.net/wp-content/uploads/2020/11/Vea-Logo.png',
+    description: 'Vea es una cadena de supermercados moderna y accesible, parte de Jumbo Retail Argentina, que ofrece una amplia variedad de productos con énfasis en la frescura y calidad.',
+    metaData: {
+      coverage: ['Buenos Aires', 'Córdoba', 'Santa Fe', 'Entre Ríos', 'Corrientes'],
+      services: ['Delivery', 'Retiro en tienda', 'Compra online', 'Club Vea'],
+      foundedYear: 1993,
+      totalStores: 95,
+      headquarters: 'Buenos Aires',
+      parentCompany: 'Jumbo Retail',
+      marketPosition: 'Supermercado moderno'
+    },
+    socialMedia: {
+      facebook: 'https://www.facebook.com/VeaSupermercados',
+      instagram: 'https://www.instagram.com/vea_supermercados'
+    }
   }
 ];
 
@@ -191,7 +315,7 @@ async function seedEnhancedDatabase() {
     await SubcategoryRaw.deleteMany({});
     await SubcategoryProcessed.deleteMany({});
     await Product.deleteMany({});
-    
+
     // Eliminar colecciones antiguas sin sufijo
     if (mongoose.connection.db) {
       try {
@@ -200,21 +324,21 @@ async function seedEnhancedDatabase() {
       } catch (error) {
         console.log('ℹ️  Colección "categories" no existía o ya fue eliminada');
       }
-      
+
       try {
         await mongoose.connection.db.dropCollection('filters');
         console.log('🗑️  Colección "filters" eliminada');
       } catch (error) {
         console.log('ℹ️  Colección "filters" no existía o ya fue eliminada');
       }
-      
+
       try {
         await mongoose.connection.db.dropCollection('products');
         console.log('🗑️  Colección "products" eliminada');
       } catch (error) {
         console.log('ℹ️  Colección "products" no existía o ya fue eliminada');
       }
-      
+
       try {
         await mongoose.connection.db.dropCollection('producttypes');
         console.log('🗑️  Colección "producttypes" eliminada');
@@ -222,7 +346,7 @@ async function seedEnhancedDatabase() {
         console.log('ℹ️  Colección "producttypes" no existía o ya fue eliminada');
       }
     }
-    
+
     console.log('🗑️  Datos anteriores eliminados');
 
     // Crear supermercados
@@ -253,11 +377,11 @@ async function seedEnhancedDatabase() {
 
       await Category.insertMany(categories);
       console.log('📂 Categorías creadas para Jumbo');
-      
+
       // Crear subcategorías procesadas con referencias a categorías
       const lacteosCategory = await Category.findOne({ name: 'Lácteos', supermarket: jumbo._id });
       const carnesCategory = await Category.findOne({ name: 'Carnes', supermarket: jumbo._id });
-      
+
       if (lacteosCategory && carnesCategory) {
         const processedSubcategories = [
           { ...subcategoriesProcessed[0], parentCategory: lacteosCategory._id, supermarket: jumbo._id },
@@ -265,7 +389,7 @@ async function seedEnhancedDatabase() {
           { ...subcategoriesProcessed[2], parentCategory: lacteosCategory._id, supermarket: jumbo._id },
           { ...subcategoriesProcessed[3], parentCategory: carnesCategory._id, supermarket: jumbo._id }
         ];
-        
+
         await SubcategoryProcessed.insertMany(processedSubcategories);
         console.log('📂 Subcategorías procesadas creadas para Jumbo');
       }
