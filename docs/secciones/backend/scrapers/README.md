@@ -17,10 +17,11 @@ Cada archivo de documentación de scraper contiene:
 
 ### ✅ Jumbo
 - **Archivo**: `Jumbo-Scraper-Documentation.md`
-- **Estado**: Primera tarea completada - Scraper básico funcional
+- **Estado**: ✅ **TAREA 2 COMPLETADA** - Click en categoría "Almacén" funcional
 - **Plataforma**: VTEX (vtex-menu@2.35.3)
 - **Tipo**: Drawer/Mobile Menu
-- **Selector Encontrado**: `.vtex-menu-2-x-menuItem--category-menu`
+- **Selector Menú**: `.vtex-menu-2-x-menuItem--category-menu`
+- **Selector Almacén**: `a[href="/almacen"]` (3 elementos encontrados)
 - **URLs Analizadas**:
   - Global: www.jumbo.com.ar
   - Categoría: https://www.jumbo.com.ar/almacen
@@ -118,11 +119,7 @@ Cada archivo de documentación de scraper contiene:
 - ✅ Capturas de pantalla generadas para análisis
 
 ### Archivos Generados
-- `src/scrapers/JumboScraper.ts` - Scraper principal funcional
-- `src/scrapers/JumboMenuInspector.ts` - Herramienta de análisis
-- `src/scrapers/test-jumbo-basic.ts` - Script de pruebas
-- `jumbo-menu-analysis.png` - Captura del análisis inicial
-- `jumbo-menu-full-analysis.png` - Captura completa del sitio
+- `src/scrapers/JumboScraper.ts` - Scraper principal funcional con navegación completa
 
 ## Próximos Pasos
 

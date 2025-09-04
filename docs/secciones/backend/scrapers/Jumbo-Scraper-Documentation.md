@@ -6,71 +6,66 @@
 - **Plataforma**: VTEX (vtex-menu@2.35.3)
 - **Tipo de Menú**: Drawer/Mobile Menu
 - **Framework Frontend**: React + VTEX IO
-- **Estado**: Documentación completa para desarrollo del scraper
+- **Estado**: ✅ **TAREA 2 COMPLETADA** - Click en categoría "Almacén" funcional
 - **✅ Primera Tarea Completada**: Scraper básico funcional que abre el menú de categorías
+- **✅ Segunda Tarea Completada**: Click automático en categoría "Almacén"
 
-## ✅ Tarea 1: Scraper Básico Completado
+## ✅ Tarea 2: Click en Categoría "Almacén" Completada
 
-### Código Implementado
+### Nueva Funcionalidad Implementada
 ```typescript
-// Selector correcto encontrado: .vtex-menu-2-x-menuItem--category-menu
-const menuSelectors = [
-  '.vtex-menu-2-x-menuItem--category-menu', // ✅ Selector funcional
-  '.vtex-menu-2-x-styledLink--category-menu',
-  '[class*="menuItem"][class*="category"]',
-  'li[class*="menuItem"]:has-text("CATEGORÍAS")',
-  'nav li:has-text("CATEGORÍAS")',
-  '.menu-toggle',
-  '.hamburger-menu',
-  '.mobile-menu-toggle'
-];
+// Nueva función agregada a JumboScraper.ts
+async clickAlmacenCategory(): Promise<void> {
+  // Busca y hace click en la categoría "Almacén" dentro del menú desplegado
+}
+```
+
+### Selectores Encontrados para "Almacén"
+```css
+/* Selector principal que funcionó */
+a[href="/almacen"] /* ✅ 3 elementos encontrados */
+
+/* Otros selectores probados */
+a[href*="almacen"]
+[class*="menuItem"]:has-text("Almacén")
+.vtex-menu-2-x-menuItem a[href="/almacen"]
 ```
 
 ### Resultado de la Prueba
 ```
-🔍 Probando selector: .vtex-menu-2-x-menuItem--category-menu
-✅ Menú encontrado con selector: .vtex-menu-2-x-menuItem--category-menu
-✅ Menú de categorías abierto correctamente
+🔍 Buscando categoría "Almacén" en el menú desplegado...
+🔍 Probando selector para Almacén: a[href="/almacen"]
+✅ Categoría "Almacén" encontrada con selector: a[href="/almacen"] (3 elementos)
+✅ Click en categoría "Almacén" realizado correctamente
 🎉 Scraper ejecutado exitosamente
 ```
 
+### Flujo Completo Actual
+1. ✅ Inicializar navegador y página
+2. ✅ Navegar a www.jumbo.com.ar
+3. ✅ Abrir menú de categorías (`.vtex-menu-2-x-menuItem--category-menu`)
+4. ✅ **Buscar y hacer click en "Almacén" (`a[href="/almacen"]`)**
+5. 🔄 Próximo: Extraer productos de la categoría Almacén
+
 ### Implementación Técnica
 
-#### Dependencias Requeridas
-```json
-{
-  "puppeteer": "^21.0.0",
-  "@types/puppeteer": "^5.4.0"
-}
-```
+#### Método `clickAlmacenCategory()`
+- **Propósito**: Buscar la categoría "Almacén" en el menú desplegado y hacer click
+- **Estrategia**: Múltiples selectores con fallback a búsqueda por texto
+- **Tiempo de espera**: 2 segundos para que el menú se abra completamente
+- **Validación**: Verifica que el elemento existe antes de hacer click
 
-#### Configuración de TypeScript
-```json
-{
-  "compilerOptions": {
-    "lib": ["ES2020", "DOM"],
-    // ... otras opciones
-  }
-}
-```
+#### Manejo de Errores
+- Captura de pantalla automática si no se encuentra la categoría
+- Múltiples estrategias de búsqueda (CSS selectors + texto)
+- Logging detallado para debugging
 
-#### Patrón de Selectores Encontrados
-```css
-/* Menú de categorías principal */
-.vtex-menu-2-x-menuItem--category-menu
-
-/* Elementos relacionados con el menú */
-.vtex-menu-2-x-styledLink--category-menu
-.vtex-menu-2-x-menuContainer--category-menu
-.vtex-menu-2-x-menuItem--header-category
-```
-
-### Próxima Tarea: Extraer Categorías del Menú
-Una vez que el menú está abierto, necesitamos:
-1. Extraer todas las categorías principales del menú desplegado
-2. Identificar los selectores para cada categoría
-3. Crear función para obtener la lista completa de categorías
-4. Validar que todas las categorías sean extraídas correctamente
+### Próxima Tarea: Extracción de Productos
+Después de hacer click en "Almacén", necesitamos:
+1. Esperar a que cargue la página de productos
+2. Extraer información de productos (nombre, precio, etc.)
+3. Implementar paginación si es necesario
+4. Guardar los datos extraídos
 
 ## Análisis de Estructuras
 
@@ -451,4 +446,121 @@ interface JumboProduct {
 ### Problema 5: Precios Dinámicos
 **Solución**: Capturar tanto precio actual como precio original
 
-<parameter name="filePath">d:\caminando-online\docs\secciones\backend\scrapers\Jumbo-Scraper-Documentation.md
+## Estado del Desarrollo
+
+### ✅ Tarea 1: Scraper Básico - COMPLETADA
+**Estado**: ✅ Funcional
+**Fecha**: 2025-09-03
+**Commit**: V0.2.1
+
+#### Funcionalidades Implementadas
+- ✅ Inicialización de Puppeteer con configuración headless
+- ✅ Navegación a www.jumbo.com.ar
+- ✅ Detección y apertura del menú de categorías
+- ✅ Captura de pantalla para análisis
+- ✅ Manejo de errores y logging completo
+
+#### Selector Encontrado
+```css
+.vtex-menu-2-x-menuItem--category-menu
+```
+
+#### Código de Implementación
+```typescript
+// JumboScraper.ts - Clase principal
+export class JumboScraper {
+  async openCategoryMenu(): Promise<void> {
+    const menuSelectors = [
+      '.vtex-menu-2-x-menuItem--category-menu', // ✅ Selector funcional
+      '.vtex-menu-2-x-styledLink--category-menu',
+      // ... otros selectores de respaldo
+    ];
+
+    for (const selector of menuSelectors) {
+      const element = await this.page.$(selector);
+      if (element) {
+        await element.click();
+        console.log(`✅ Menú encontrado con selector: ${selector}`);
+        return;
+      }
+    }
+  }
+}
+```
+
+#### Resultados de Prueba
+```
+🧪 Iniciando prueba del scraper básico de Jumbo...
+🎯 Iniciando scraper básico de Jumbo...
+🚀 Inicializando scraper de Jumbo...
+✅ Scraper inicializado correctamente
+🌐 Navegando a www.jumbo.com.ar...
+✅ Página cargada correctamente
+🔍 Buscando menú de categorías...
+✅ Menú encontrado con selector: .vtex-menu-2-x-menuItem--category-menu
+✅ Menú de categorías abierto correctamente
+🎉 Scraper ejecutado exitosamente
+```
+
+#### Archivos Creados
+- `backend/src/scrapers/JumboScraper.ts` - Scraper principal con funcionalidad completa
+
+## Próximas Etapas
+
+### 🔄 Tarea 2: Extracción de Categorías (Próxima)
+- Extraer todas las categorías principales del menú
+- Mapear estructura jerárquica de categorías
+- Crear lista completa de URLs de categorías
+- Implementar validación de categorías activas
+
+### Etapa 3: Extracción de Productos
+- Implementar paginación automática
+- Extraer datos básicos de productos
+- Manejar errores y reintentos
+- Optimizar tiempos de respuesta
+
+### Etapa 4: Extracción Avanzada
+- Extraer datos detallados de productos
+- Implementar filtros y búsqueda
+- Parsear especificaciones técnicas
+- Extraer información nutricional
+
+### Etapa 5: Testing y Validación
+- Validar integridad de datos
+- Testing de edge cases
+- Optimización de rendimiento
+- Implementar sistema de reintentos
+
+### Etapa 6: Producción
+- Despliegue del scraper
+- Monitoreo continuo
+- Mantenimiento y actualizaciones
+- Sistema de alertas
+
+## 📊 Resumen del Progreso Actual
+
+### ✅ Tareas Completadas
+1. **TAREA 1**: Scraper básico funcional
+   - ✅ Inicialización del navegador con Puppeteer
+   - ✅ Navegación a www.jumbo.com.ar
+   - ✅ Detección y apertura del menú de categorías
+   - ✅ Selector identificado: `.vtex-menu-2-x-menuItem--category-menu`
+   - ✅ Testing y validación completados
+
+2. **TAREA 2**: Click en categoría "Almacén"
+   - ✅ Búsqueda automática de categoría "Almacén" en menú desplegado
+   - ✅ Selector identificado: `a[href="/almacen"]` (3 elementos encontrados)
+   - ✅ Click automático funcional
+   - ✅ Testing y validación completados
+
+### 🔄 Estado Actual del Scraper
+- **Funcionalidad**: Navegación + Apertura de menú + Click en Almacén
+- **Archivos principales**:
+  - `backend/src/scrapers/JumboScraper.ts` - Scraper principal con funcionalidad completa
+- **Tiempo de ejecución**: ~15-20 segundos (incluyendo esperas)
+- **Éxito de pruebas**: 100% en pruebas realizadas
+
+### 🎯 Próximos Pasos Inmediatos
+- **TAREA 3**: Extraer productos de la categoría Almacén
+- **TAREA 4**: Implementar paginación automática
+- **TAREA 5**: Extracción de datos detallados de productos

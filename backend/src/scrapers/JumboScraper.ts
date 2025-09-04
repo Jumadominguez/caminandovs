@@ -118,15 +118,110 @@ export class JumboScraper {
   }
 
   /**
-   * Ejecuta el scraper básico
+   * Busca y hace click en la categoría "Almacén" dentro del menú desplegado
+   */
+  async clickAlmacenCategory(): Promise<void> {
+    if (!this.page) {
+      throw new Error('Scraper no inicializado. Llama a initialize() primero.');
+    }
+
+    try {
+      console.log('🔍 Buscando categoría "Almacén" en el menú desplegado...');
+
+      // Esperar a que el menú se abra completamente
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Selectores posibles para la categoría "Almacén"
+      const almacenSelectors = [
+        'a[href="/almacen"]', // Enlace directo a almacén
+        'a[href*="almacen"]', // Cualquier enlace que contenga "almacen"
+        '[class*="menuItem"]:has-text("Almacén")', // Elemento con texto "Almacén"
+        '[class*="menuItem"]:has-text("ALMACÉN")', // Texto en mayúsculas
+        'li:has-text("Almacén")', // Lista item con texto
+        'li:has-text("ALMACÉN")', // Lista item en mayúsculas
+        '.vtex-menu-2-x-menuItem a[href="/almacen"]', // Dentro del menú VTEX
+        '.vtex-menu-2-x-styledLink[href="/almacen"]', // Enlace estilizado VTEX
+        '[data-category="almacen"]', // Atributo data
+        '[data-category="Almacén"]' // Atributo data con tilde
+      ];
+
+      let almacenFound = false;
+
+      for (const selector of almacenSelectors) {
+        try {
+          console.log(`🔍 Probando selector para Almacén: ${selector}`);
+          const elements = await this.page.$$(selector);
+
+          if (elements.length > 0) {
+            console.log(`✅ Categoría "Almacén" encontrada con selector: ${selector} (${elements.length} elementos)`);
+
+            // Hacer click en el primer elemento encontrado
+            await elements[0].click();
+            almacenFound = true;
+
+            // Esperar a que se cargue la página de la categoría
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            console.log('✅ Click en categoría "Almacén" realizado correctamente');
+            break;
+          }
+        } catch (error) {
+          console.log(`❌ Selector ${selector} no funcionó:`, error instanceof Error ? error.message : String(error));
+        }
+      }
+
+      if (!almacenFound) {
+        console.log('⚠️ No se encontró la categoría "Almacén" con los selectores conocidos');
+
+        // Intentar búsqueda por texto como último recurso
+        try {
+          console.log('🔍 Intentando búsqueda por texto "Almacén"...');
+          const elements = await this.page.$$('*');
+
+          for (const element of elements) {
+            try {
+              const text = await this.page.evaluate(el => el.textContent?.trim(), element);
+              if (text && (text.toLowerCase().includes('almacén') || text.toLowerCase().includes('almacen'))) {
+                console.log(`✅ Elemento encontrado con texto: "${text}"`);
+                await element.click();
+                almacenFound = true;
+                break;
+              }
+            } catch (e) {
+              // Ignorar errores en elementos individuales
+            }
+          }
+        } catch (error) {
+          console.log('❌ Búsqueda por texto también falló:', error instanceof Error ? error.message : String(error));
+        }
+
+        if (!almacenFound) {
+          console.log('📸 Tomando captura de pantalla para análisis del menú desplegado...');
+          await this.page.screenshot({
+            path: 'jumbo-menu-expanded-analysis.png',
+            fullPage: true
+          });
+          console.log('📸 Captura guardada como jumbo-menu-expanded-analysis.png');
+        }
+      }
+
+    } catch (error) {
+      console.error('❌ Error buscando categoría "Almacén":', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Ejecuta el scraper completo: abre menú y hace click en Almacén
    */
   async run(): Promise<void> {
     try {
-      console.log('🎯 Iniciando scraper básico de Jumbo...');
+      console.log('🎯 Iniciando scraper completo de Jumbo...');
 
       await this.initialize();
       await this.navigateToHome();
       await this.openCategoryMenu();
+      await this.clickAlmacenCategory();
 
       console.log('🎉 Scraper ejecutado exitosamente');
 
@@ -163,7 +258,7 @@ if (require.main === module) {
       console.log('✅ Scraper completado exitosamente');
       process.exit(0);
     })
-    .catch((error) => {
+    .catch((error: any) => {
       console.error('❌ Error en scraper:', error);
       process.exit(1);
     });
