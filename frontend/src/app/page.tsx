@@ -6,7 +6,7 @@ import Filters from '../components/Filters';
 import IntegratedProductTable from '../components/IntegratedProductTable';
 import ComparisonTable from '../components/ComparisonTable';
 import FinalResultsTable from '../components/FinalResultsTable';
-import { sampleProducts } from '../data/sampleData';
+import { useProducts } from '../hooks/useProducts';
 
 const categories = {
   'Almacén': {
@@ -166,79 +166,18 @@ export default function Home() {
     setComparisonProducts([]);
   };
 
-  // Actualizar productos disponibles cuando cambia el tipo de producto
+  // Usar el hook personalizado para obtener productos desde la API
+  const {
+    products: apiProducts,
+    loading: productsLoading,
+    error: productsError,
+    hasAvailableProducts
+  } = useProducts(selectedProductType, subfilters, selectedSupermarkets);
+
+  // Sincronizar productos de la API con el estado local
   useEffect(() => {
-    console.log('Filtering products for:', selectedProductType);
-    console.log('Current subfilters:', subfilters);
-
-    if (selectedProductType && sampleProducts[selectedProductType as keyof typeof sampleProducts]) {
-      let products = sampleProducts[selectedProductType as keyof typeof sampleProducts];
-      console.log('Initial products count:', products.length);
-
-      // NO filtrar por supermercados seleccionados - los productos deben mostrarse siempre
-      // La tabla de comparación se encargará de mostrar solo las columnas de supermercados seleccionados
-
-      // Aplicar subfiltros
-      if (subfilters.marca) {
-        if (subfilters.marca === 'Otra') {
-          console.log('Skipping marca filter for "Otra"');
-        } else {
-          console.log('Applying marca filter:', subfilters.marca);
-          const beforeCount = products.length;
-          products = products.filter(product => {
-            const matches = product.brand === subfilters.marca;
-            if (!matches) {
-              console.log('Product', product.name, 'brand:', product.brand, 'does not match filter:', subfilters.marca);
-            }
-            return matches;
-          });
-          console.log('After marca filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
-        }
-      }
-      if (subfilters.variedad) {
-        console.log('Applying variedad filter:', subfilters.variedad);
-        const beforeCount = products.length;
-        products = products.filter(product => {
-          const matches = product.variety === subfilters.variedad;
-          if (!matches) {
-            console.log('Product', product.name, 'variety:', product.variety, 'does not match filter:', subfilters.variedad);
-          }
-          return matches;
-        });
-        console.log('After variedad filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
-      }
-      if (subfilters.envase) {
-        console.log('Applying envase filter:', subfilters.envase);
-        const beforeCount = products.length;
-        products = products.filter(product => {
-          const matches = product.package === subfilters.envase;
-          if (!matches) {
-            console.log('Product', product.name, 'package:', product.package, 'does not match filter:', subfilters.envase);
-          }
-          return matches;
-        });
-        console.log('After envase filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
-      }
-      if (subfilters.tamaño) {
-        console.log('Applying tamaño filter:', subfilters.tamaño);
-        const beforeCount = products.length;
-        products = products.filter(product => {
-          const matches = product.size === subfilters.tamaño;
-          if (!matches) {
-            console.log('Product', product.name, 'size:', product.size, 'does not match filter:', subfilters.tamaño);
-          }
-          return matches;
-        });
-        console.log('After tamaño filter:', products.length, '(filtered out:', beforeCount - products.length, ')');
-      }
-
-      console.log('Final products count:', products.length);
-      setAvailableProducts(products);
-    } else {
-      console.log('No products found for type:', selectedProductType);
-      setAvailableProducts([]);
-    }
-  }, [selectedProductType, selectedSupermarkets, subfilters]);
+    setAvailableProducts(apiProducts);
+  }, [apiProducts]);
 
   // Guardar productos de comparación en localStorage
   useEffect(() => {
@@ -281,7 +220,7 @@ export default function Home() {
           selectedProductType={selectedProductType}
           subfilters={subfilters}
           availableProducts={availableProducts}
-          hasAvailableProducts={availableProducts.length > 0}
+          hasAvailableProducts={hasAvailableProducts}
           onCategoryChange={handleCategoryChange}
           onSubcategoryChange={handleSubcategoryChange}
           onProductTypeChange={handleProductTypeChange}
@@ -291,14 +230,39 @@ export default function Home() {
 
         {/* Integrated Product Table - Show when product type is selected OR when there are comparison products */}
         {(selectedProductType || comparisonProducts.length > 0) && (
-          <IntegratedProductTable
-            availableProducts={availableProducts}
-            comparisonProducts={comparisonProducts}
-            onProductToggle={handleProductToggle}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveProduct={handleRemoveProduct}
-            onRemoveAll={handleRemoveAll}
-          />
+          <div>
+            {/* Loading indicator */}
+            {productsLoading && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600 mr-3"></div>
+                  <p className="text-blue-800">Cargando productos...</p>
+                </div>
+              </div>
+            )}
+
+            {/* Error indicator */}
+            {productsError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+                <div className="flex items-center">
+                  <div className="text-red-600 mr-3">⚠️</div>
+                  <div>
+                    <p className="text-red-800 font-medium">Error al cargar productos</p>
+                    <p className="text-red-600 text-sm">{productsError}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <IntegratedProductTable
+              availableProducts={availableProducts}
+              comparisonProducts={comparisonProducts}
+              onProductToggle={handleProductToggle}
+              onUpdateQuantity={handleUpdateQuantity}
+              onRemoveProduct={handleRemoveProduct}
+              onRemoveAll={handleRemoveAll}
+            />
+          </div>
         )}
 
         {/* Comparison Table - Show when there are products to compare */}
