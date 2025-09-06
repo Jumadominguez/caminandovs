@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import productRoutes from './routes/products';
 import comparisonRoutes from './routes/comparisons';
 import supermarketRoutes from './routes/supermarkets';
+import categoryRoutes from './routes/categories';
 
 // Importar middlewares
 import { apiResponse, errorHandler } from './middlewares/apiMiddleware';
@@ -50,6 +51,7 @@ const connectDB = async () => {
 app.use('/api/products', productRoutes);
 app.use('/api/comparisons', comparisonRoutes);
 app.use('/api/supermarkets', supermarketRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // Rutas básicas
 app.get('/', (req, res) => {

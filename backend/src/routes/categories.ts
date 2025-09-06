@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import mongoose from 'mongoose';
 import Category from '../models/Category';
 
 const router = Router();
@@ -124,6 +125,74 @@ router.post('/scrape', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al programar scraping'
+    });
+  }
+});
+
+// GET /api/categories/jumbo - Obtener categorías de la base de datos Jumbo
+router.get('/jumbo', async (req, res) => {
+  try {
+    console.log('📡 Consultando categorías de base de datos Jumbo...');
+
+    // Crear una nueva conexión a la base de datos Jumbo
+    const jumboConnection = mongoose.createConnection('mongodb://localhost:27017/Jumbo');
+
+    // Definir el esquema para las categorías de Jumbo
+    const jumboCategorySchema = new mongoose.Schema({
+      Nombre: String,
+      'Nombre simplificado': String,
+      type: String,
+      URL: String,
+      Selector: String,
+      level: Number,
+      hasSubcategories: Boolean,
+      productCount: Number,
+      isActive: Boolean,
+      subcategories: [String],
+      createdAt: Date,
+      updatedAt: Date
+    }, { collection: 'categories' });
+
+    // Crear el modelo
+    const JumboCategory = jumboConnection.model('JumboCategory', jumboCategorySchema);
+
+    // Obtener todas las categorías activas
+    const categories = await JumboCategory.find({ isActive: true })
+      .sort({ Nombre: 1 });
+
+    // Cerrar la conexión
+    await jumboConnection.close();
+
+    console.log(`✅ Se encontraron ${categories.length} categorías en Jumbo`);
+
+    // Transformar los datos para el frontend
+    const transformedCategories = categories.map(cat => ({
+      id: cat._id.toString(),
+      nombre: cat.Nombre,
+      nombreSimplificado: cat['Nombre simplificado'],
+      type: cat.type,
+      url: cat.URL,
+      selector: cat.Selector,
+      level: cat.level,
+      hasSubcategories: cat.hasSubcategories,
+      productCount: cat.productCount,
+      isActive: cat.isActive,
+      subcategories: cat.subcategories || []
+    }));
+
+    res.json({
+      success: true,
+      data: transformedCategories,
+      total: transformedCategories.length,
+      message: 'Categorías de Jumbo obtenidas exitosamente'
+    });
+
+  } catch (error) {
+    console.error('❌ Error obteniendo categorías de Jumbo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener categorías de Jumbo',
+      error: error instanceof Error ? error.message : 'Error desconocido'
     });
   }
 });

@@ -16,23 +16,23 @@ interface FiltersProps {
   onResetFilters: () => void;
 }
 
-const categories = {
-  'Almacén': {
-    'Aceites': ['Aceites de girasol', 'Aceites de oliva', 'Aceites mixtos'],
-    'Fideos': ['Fideos secos', 'Fideos frescos', 'Fideos integrales'],
-    'Salsas': ['Salsas de tomate', 'Salsas blancas', 'Salsas especiales']
-  },
-  'Bebidas': {
-    'Gaseosas': ['Gaseosas de litro', 'Gaseosas de 2.25L', 'Gaseosas de 500ml'],
-    'Vinos': ['Vinos tintos', 'Vinos blancos', 'Vinos rosados'],
-    'Aguas': ['Aguas sin gas', 'Aguas con gas', 'Aguas saborizadas']
-  },
-  'Limpieza': {
-    'Detergentes': ['Detergente para platos', 'Detergente para ropa', 'Detergente multiuso'],
-    'Lavandinas': ['Lavandina común', 'Lavandina concentrada', 'Lavandina perfumada'],
-    'Limpia Vidrios': ['Limpia vidrios concentrado', 'Limpia vidrios listo', 'Limpia vidrios antibacterial']
-  }
-};
+// Estructura para categorías de la API
+interface ApiCategory {
+  id: string;
+  nombre: string;
+  nombreSimplificado: string;
+  type: string;
+  url: string;
+  selector: string;
+  level: number;
+  hasSubcategories: boolean;
+  productCount: number;
+  isActive: boolean;
+  subcategories: any[];
+}
+
+// Estado inicial vacío mientras carga
+const initialCategories: { [key: string]: { [key: string]: string[] } } = {};
 
 const subfilterOptions = {
   'marca': ['Coca-Cola', 'Pepsi', 'Manaos', 'Otra'],
@@ -54,8 +54,58 @@ export default function Filters({
   onSubfilterChange,
   onResetFilters
 }: FiltersProps) {
+  const [categories, setCategories] = useState<{ [key: string]: { [key: string]: string[] } }>(initialCategories);
+  const [loadingCategories, setLoadingCategories] = useState(true);
   const [availableProductTypes, setAvailableProductTypes] = useState<string[]>([]);
   const [lastValidSubfilterOptions, setLastValidSubfilterOptions] = useState<{ [key: string]: string[] }>({});
+
+  // Cargar categorías desde la API
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        console.log('Cargando categorías desde la API...');
+        const response = await fetch('http://localhost:5000/api/categories/jumbo');
+        if (!response.ok) {
+          throw new Error('Error al cargar categorías');
+        }
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+          // Transformar los datos de la API al formato esperado
+          const transformedCategories: { [key: string]: { [key: string]: string[] } } = {};
+          
+          data.data.forEach((category: ApiCategory) => {
+            const categoryName = category.nombre; // Usar 'nombre' como categoría principal
+            
+            if (!transformedCategories[categoryName]) {
+              transformedCategories[categoryName] = {};
+            }
+            
+            // Crear 3 subcategorías mockup aleatorias para cada categoría
+            const mockSubcategories = [
+              `${category.nombreSimplificado} Básico`,
+              `${category.nombreSimplificado} Premium`, 
+              `${category.nombreSimplificado} Orgánico`
+            ];
+            
+            // Usar el nombre simplificado como nombre de subcategoría
+            transformedCategories[categoryName][category.nombreSimplificado] = mockSubcategories;
+          });
+          
+          console.log('Categorías transformadas:', transformedCategories);
+          setCategories(transformedCategories);
+        }
+      } catch (error) {
+        console.error('Error cargando categorías:', error);
+        // Mantener categorías vacías en caso de error
+        setCategories({});
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   // Crear estructura jerárquica para el select único
   const hierarchicalOptions = Object.entries(categories).map(([category, subcategories]) => ({
@@ -108,16 +158,16 @@ export default function Filters({
   };
 
   useEffect(() => {
-    if (selectedCategory && selectedSubcategory) {
-      const categoryData = categories[selectedCategory as keyof typeof categories];
-      if (categoryData && selectedSubcategory) {
-        setAvailableProductTypes(categoryData[selectedSubcategory as keyof typeof categoryData] || []);
+    if (selectedCategory && selectedSubcategory && categories[selectedCategory]) {
+      const categoryData = categories[selectedCategory];
+      if (categoryData && selectedSubcategory && categoryData[selectedSubcategory]) {
+        setAvailableProductTypes(categoryData[selectedSubcategory]);
         // No resetear selectedProductType aquí, mantener la selección actual
       }
     } else {
       setAvailableProductTypes([]);
     }
-  }, [selectedCategory, selectedSubcategory]);
+  }, [selectedCategory, selectedSubcategory, categories]);
 
   // Resetear subfiltros cuando cambie el tipo de producto
   useEffect(() => {
@@ -162,9 +212,12 @@ export default function Filters({
           <select
             value={selectedValue}
             onChange={(e) => handleHierarchicalChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={loadingCategories}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
           >
-            <option value="">Seleccionar categoría y subcategoría...</option>
+            <option value="">
+              {loadingCategories ? 'Cargando categorías...' : 'Seleccionar categoría y subcategoría...'}
+            </option>
             {hierarchicalOptions.map((option) => (
               <optgroup key={option.category} label={option.category}>
                 {option.subcategories.map((subcategory) => (

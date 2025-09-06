@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import Product from '../models/Product';
 
 export const getProducts = async (req: Request, res: Response) => {
@@ -14,11 +15,11 @@ export const getProducts = async (req: Request, res: Response) => {
 
     // Filtros adicionales
     if (category) {
-      query.category = category;
+      query.category = new mongoose.Types.ObjectId(category as string);
     }
 
     if (supermarket) {
-      query.supermarket = supermarket;
+      query.supermarket = new mongoose.Types.ObjectId(supermarket as string);
     }
 
     const products = await Product
@@ -106,11 +107,11 @@ export const searchProducts = async (req: Request, res: Response) => {
 
     // Filtros
     if (category) {
-      query.category = category;
+      query.category = new mongoose.Types.ObjectId(category as string);
     }
 
     if (supermarket) {
-      query.supermarket = supermarket;
+      query.supermarket = new mongoose.Types.ObjectId(supermarket as string);
     }
 
     // Filtro de precio
