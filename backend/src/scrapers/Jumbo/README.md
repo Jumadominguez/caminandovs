@@ -1,23 +1,47 @@
 # Jumbo Scraper
 
-Esta carpeta contiene los scripts para el scraping de categorías y subcategorías del sitio web de Jumbo.
+Esta carpeta contiene el script principal para el scraping completo de categorías y subcategorías del sitio web de Jumbo.
 
-## Archivos
+## Archivo Principal
 
-### Scripts Principales
+### **`scraperCategories-Jumbo.js`** - Script completo de scraping de Jumbo
+- **Extrae información del supermercado** (logo, descripción, etc.)
+- **Extrae categorías principales** del menú de navegación
+- **Extrae subcategorías** con fallback automático inteligente
+- **Implementa normalización Unicode** para nombres con acentos
+- **Genera reportes comparativos** detallados con diferencias
+- **Reemplaza colecciones** sin duplicados usando estrategia raw
+- **Maneja errores robustamente** con múltiples estrategias de recuperación
 
-- **`extract-subcategories.js`** - Script principal para extraer subcategorías de Jumbo
-  - Extrae subcategorías de todas las categorías principales activas
-  - Implementa fallback automático cuando no encuentra contenedor de "Sub-Categoría"
-  - Guarda snapshots antes de modificaciones en la carpeta `reports/`
-  - Actualiza la base de datos con las subcategorías encontradas
+## Características
 
-- **`check-categories.js`** - Script de verificación
-  - Verifica cuántas categorías principales tienen subcategorías
-  - Muestra estadísticas de subcategorías por categoría
-  - Identifica categorías sin subcategorías
+- ✅ **Scraping completo**: Supermercado + Categorías + Subcategorías
+- ✅ **Unicode normalization**: Manejo correcto de acentos (ñ, á, é, etc.)
+- ✅ **Fallback automático**: Usa contenedor de "Categoría" cuando no hay "Sub-Categoría"
+- ✅ **Reportes detallados**: Comparación de cambios entre ejecuciones
+- ✅ **Estrategia raw**: Evita duplicados y permite rollback
+- ✅ **Múltiples estrategias**: Detección robusta de elementos DOM
 
-- **`check-subcategories.js`** - Script adicional de verificación
+## Uso
+
+```bash
+cd backend/src/scrapers/Jumbo
+node scraperCategories-Jumbo.js
+```
+
+## Reportes
+
+Los reportes se generan automáticamente en la carpeta `reports/` con:
+- Snapshot de colecciones actuales
+- Estadísticas detalladas
+- Comparación de cambios
+- Resumen ejecutivo
+
+## Base de Datos
+
+- **Base de datos**: `Jumbo`
+- **Colecciones principales**: `categories`, `supermarkets`
+- **Colecciones temporales**: `categories-raw`, `supermarkets-raw`
   - Verifica subcategorías específicas
   - Utilizado para debugging y validación
 
