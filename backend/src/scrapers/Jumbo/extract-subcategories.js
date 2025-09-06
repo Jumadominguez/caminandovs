@@ -89,7 +89,14 @@ async function createSnapshot() {
     // Crear nombre del archivo con timestamp
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const filename = `snapshot-categories-${timestamp}.md`;
-    const filepath = path.join(__dirname, filename);
+    const reportsDir = path.join(__dirname, 'reports');
+    
+    // Crear directorio reports si no existe
+    if (!fs.existsSync(reportsDir)) {
+      fs.mkdirSync(reportsDir, { recursive: true });
+    }
+    
+    const filepath = path.join(reportsDir, filename);
 
     // Guardar el archivo
     fs.writeFileSync(filepath, snapshotContent, 'utf8');
